@@ -1,0 +1,6 @@
+var1 = true;
+
+if (var1)
+{
+    print("Hello World");
+}
