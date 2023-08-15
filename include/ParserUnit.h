@@ -9,12 +9,18 @@
 #include <string>
 #include <list>
 
+#include "../include/token.h"
 #include "GlobalMacros.h"
 
-std::string getTodayDate();
+std::string getTodayDate(bool);
+inline size_t chopComment(char*, size_t); // check for alternative
+inline size_t chopConstChar(char*, size_t);
+inline size_t getToken(std::list<std::string>&, char*);
+inline void breakToTokens(std::ifstream&, std::list<std::string>&);
+inline char* breakToTokensNotBuffered(std::list<token>&, std::ifstream &);
 
 #ifdef DEBUG_
-void writeBufferOut(std::ifstream&);
+void writeListOut(std::ofstream& dst, std::list<token>& list);
 #endif // DEBUG_
 
 class ParserUnit{
@@ -29,6 +35,12 @@ class ParserUnit{
     std::ofstream debugLogFile;
 #endif
 
+#ifndef BUFFERED_
+    char* fileContent = nullptr;
+public:
+    ~ParserUnit(){ delete[] fileContent; }
+#endif
+
 public:
     void EnableSaveToFile();
     void SetLogDest(const char* NewDest){
@@ -41,11 +53,11 @@ public:
     }
 #endif
 private:
-
+    std::list<token> getFirstStageTokens(std::ifstream&);
 
 public:
-    std::list<std::string> processFile(const char*);
-    std::list<std::string> processCin();
+    std::list<token> processFile(const char*);
+    std::list<token> processCin();
 };
 
 #endif //INTERPRETER_PARSERUNIT_H

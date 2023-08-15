@@ -1,6 +1,89 @@
-var1 = true;
+#this is comment
 
-if (var1)
-{
-    print("Hello World");
-}
+var1 = true
+
+if var1
+    print("Hello World")
+endif
+
+for i = 1:2:100
+    print("Hello World!\n")
+endloop
+
+var2 = 5
+
+while var2 > 0
+    print("Goodbye World!\n")
+endloop
+
+#this is comment
+
+var1 = true
+
+if var1
+    print("Hello World")
+endif
+
+for i = 1:2:100
+    print("Hello World!\n")
+endloop
+
+var2 = 5
+
+while var2 > 0
+    print("Goodbye World!\n")
+endloop
+
+#this is comment
+
+var1 = true
+
+if var1
+    print("Hello World")
+endif
+
+for i = 1:2:100
+    print("Hello World!\n")
+endloop
+
+var2 = 5
+
+while var2 > 0
+    print("Goodbye World!\n")
+endloop
+
+#this is comment
+
+var1 = true
+
+if var1
+    print("Hello World")
+endif
+
+for i = 1:2:100
+    print("Hello World!\n")
+endloop
+
+var2 = 5
+
+while var2 > 0
+    print("Goodbye World!\n")
+endloop
+
+#this is comment
+
+var1 = true
+
+if var1
+    print("Hello World")
+endif
+
+for i = 1:2:100
+    print("Hello World!\n")
+endloop
+
+var2 = 5
+
+while var2 > 0
+    print("Goodbye World!\n")
+endloop

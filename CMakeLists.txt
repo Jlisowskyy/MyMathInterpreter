@@ -8,6 +8,9 @@ add_executable(Interpreter
         include/ParserUnit.h
         src/MyMathInterpreter.cpp
         include/GlobalMacros.h
-        src/ParserUnit.cpp)
+        src/ParserUnit.cpp
+        include/token.h
+        src/token.cpp
+        include/errors.h)
 
 #target_compile_options(ParallelNumeric PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-mavx;-mavx2;-mfma;-O3)
