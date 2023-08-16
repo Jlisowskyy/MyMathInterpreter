@@ -16,8 +16,12 @@ std::string getTodayDate(bool);
 inline size_t chopComment(char*, size_t); // check for alternative
 inline size_t chopConstChar(char*, size_t);
 inline size_t getToken(std::list<std::string>&, char*);
-inline void breakToTokens(std::ifstream&, std::list<std::string>&);
-inline char* breakToTokensNotBuffered(std::list<token>&, std::ifstream &);
+
+#ifdef BUFFERED_
+inline void breakToTokens(std::list<token>&, std::ifstream&);
+#else
+inline char* breakToTokens(std::list<token>&, std::ifstream &);
+#endif
 
 #ifdef DEBUG_
 void writeListOut(std::ofstream& dst, std::list<token>& list);

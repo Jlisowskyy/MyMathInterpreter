@@ -28,20 +28,24 @@ std::string getTodayDate(bool displaySeconds = false) {
     return stream.str();
 }
 
-void breakToTokens(std::ifstream &fstr, std::list<std::string> &tokens) {
+#ifdef BUFFERED_
+
+void breakToTokens(std::list<token> &tokens, std::ifstream &fstr) {
     char buff;
     std::string tokenBuff;
     while(fstr.get(buff)){
         if (isComment(buff)) fstr.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         else if (isNotBlank(buff)) tokenBuff += buff;
         else if (!tokenBuff.empty()){
-            tokens.push_back(tokenBuff);
+            tokens.emplace_back(tokenBuff);
             tokenBuff.clear();
         }
     }
 }
 
-char* breakToTokensNotBuffered(std::list<token> &tokenDst, std::ifstream &fstr){
+#else
+
+char* breakToTokens(std::list<token> &tokenDst, std::ifstream &fstr){
     char* file;
     unsigned tokenSize = 0;
 
@@ -85,6 +89,8 @@ char* breakToTokensNotBuffered(std::list<token> &tokenDst, std::ifstream &fstr){
 
     return file;
 }
+
+#endif // BUFFERED_
 
 size_t chopComment(char * file, size_t curPos) {
     do{
@@ -160,10 +166,10 @@ void ParserUnit::openReadFile(std::ifstream &stream, const char *src) {
 std::list<token> ParserUnit::getFirstStageTokens(std::ifstream & fStream) {
     std::list<token> tokenList;
 #ifdef BUFFERED_
-    breakToTokens(ftp, tokenList);
+    breakToTokens(fStream, tokenList);
 #else
 
-    fileContent = breakToTokensNotBuffered(tokenList, fStream);
+    fileContent = breakToTokens(tokenList, fStream);
 
     if (saveLogToFile){
         logFile << "[  OK  ] Parser correctly retrieved first stage tokens from file\n";
@@ -198,7 +204,6 @@ std::list<token> ParserUnit::processFile(const char* src) {
 
         exit(1);
     }
-
     return tokenList;
 }
 

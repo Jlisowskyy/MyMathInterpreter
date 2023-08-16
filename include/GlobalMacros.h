@@ -5,7 +5,7 @@
 #ifndef INTERPRETER_GLOBALMACROS_H
 #define INTERPRETER_GLOBALMACROS_H
 
-#define DEBUG_
+//#define DEBUG_
 //#define BUFFERED_
 
 #define ParserDebugDestDefault "C:\\Users\\Jlisowskyy\\Desktop\\Projekty\\Interpreter\\DebugLogs\\"

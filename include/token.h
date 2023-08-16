@@ -6,9 +6,18 @@
 #define INTERPRETER_TOKEN_H
 
 #include <map>
+#include "GlobalMacros.h"
+
+#ifdef BUFFERED_
+#include <string>
+#include <utility>
+using TOKENTYPE = std::string;
+#else
+using TOKENTYPE = char*;
+#endif
 
 class token{
-    char* tokenVal;
+    TOKENTYPE tokenVal;
     unsigned tokenSize;
 
     struct tokenInfo{
@@ -21,11 +30,11 @@ public:
     using tokenType = token::tokenInfo::tokenType;
     using varType = token::tokenInfo::varType;
 
-    explicit token(char* tokenVal, tokenType tType = tokenType::UNKNOWN, varType vType = varType::UNKNOWN ):
+    explicit token(TOKENTYPE tokenVal, tokenType tType = tokenType::UNKNOWN, varType vType = varType::UNKNOWN ):
         tokenVal{ tokenVal }, tokenSize{ 0 }, tInfo{ tType, vType } {}
 
     // Used mainly in debugging options
-    inline const char* getToken() const { return tokenVal; }
+    inline const TOKENTYPE getToken() const { return tokenVal; }
     inline const unsigned getSize() const { return tokenSize; }
     inline tokenType gettType() const { return tInfo.tType; }
 
