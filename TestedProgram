@@ -1,4 +1,4 @@
-#this is comment
+#this is COM
 
 var1 = true
 
@@ -16,7 +16,7 @@ while var2 > 0
     print("Goodbye World!\n")
 endloop
 
-#this is comment
+#this is COM
 
 var1 = true
 
@@ -34,7 +34,7 @@ while var2 > 0
     print("Goodbye World!\n")
 endloop
 
-#this is comment
+#this is COM
 
 var1 = true
 
@@ -52,7 +52,7 @@ while var2 > 0
     print("Goodbye World!\n")
 endloop
 
-#this is comment
+#this is COM
 
 var1 = true
 
@@ -70,7 +70,7 @@ while var2 > 0
     print("Goodbye World!\n")
 endloop
 
-#this is comment
+#this is COM
 
 var1 = true
 

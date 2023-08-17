@@ -5,12 +5,14 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Interpreter
         main.cpp
-        include/ParserUnit.h
+        include/parserUnit.h
         src/MyMathInterpreter.cpp
-        include/GlobalMacros.h
-        src/ParserUnit.cpp
+        include/globalMacros.h
+        src/parserUnit.cpp
         include/token.h
         src/token.cpp
-        include/errors.h)
+        include/errors.h
+        include/tokenizer.h
+        src/tokenizer.cpp)
 
-#target_compile_options(ParallelNumeric PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-mavx;-mavx2;-mfma;-O3)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;)

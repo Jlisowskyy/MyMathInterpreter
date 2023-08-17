@@ -1,5 +1,8 @@
-.idea/*
-cmake-build-debug/*
+.idea/
+cmake-build-debug/
+cmake-build-debug-clang/
+cmake-build-reldeb-clang/
+cmake-build-release-clang/
 *.exe
 DebugLogs/
 Logs/
