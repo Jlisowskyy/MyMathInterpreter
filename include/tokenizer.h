@@ -14,22 +14,44 @@ class tokenizer{
     char* file = nullptr;
     size_t fSize = 0;
     size_t curPos = 0;
+    size_t line = 1;
     bool isNewToken = false;
 
     using reactProc = void(tokenizer::*)();
     const static reactProc reactionMap[ASCII_SIZE];
 
 private:
+    inline void abandonIfEmpty() noexcept(false){
+        if (tokens.empty()) [[unlikely]]
+        {
+            throw std::runtime_error("[ERROR] Invalid use of operator or separator token on first line\n");
+        }
+    }
+
+
     inline void op(const char* ptr){
-        tokens.emplace_back(ptr, token::tokenType ::OPER);
+        tokens.emplace_back(ptr, token::tokenType::OPER);
         isNewToken= true;
         file[curPos] = '\0';
     };
 
+    inline void sep(const char* ptr){
+        tokens.emplace_back(ptr, token::tokenType::SEPARATOR);
+        isNewToken = true;
+        file[curPos] = '\0';
+    }
+
+    inline void csep(const char* ptr){
+        tokens.emplace_back(ptr, token::tokenType::CSEPARATOR);
+        isNewToken = true;
+        file[curPos] = '\0';
+    }
+
     inline void Nothing() {}
     inline void processComment();
     inline void processConstChar();
-    inline void processBlank();
+    inline void processNewLine();
+    inline void processSpace();
     inline void processNegation();
     inline void processParenthesisOpened();
     inline void processParenthesisClosed();

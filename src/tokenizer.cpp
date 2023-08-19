@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cstdlib>
 
 #include "../include/tokenizer.h"
 #include "../include/errors.h"
@@ -20,7 +21,7 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] = {
         &tokenizer::Nothing,
         &tokenizer::Nothing,
         &tokenizer::Nothing,
-        &tokenizer::processBlank,
+        &tokenizer::processNewLine,
         &tokenizer::Nothing,
         &tokenizer::Nothing,
         &tokenizer::Nothing,
@@ -42,7 +43,7 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] = {
         &tokenizer::Nothing,
         &tokenizer::Nothing,
         &tokenizer::Nothing,
-        &tokenizer::processBlank,
+        &tokenizer::processSpace,
         &tokenizer::processNegation,
         &tokenizer::processConstChar,
         &tokenizer::processComment,
@@ -149,7 +150,13 @@ std::list<token> tokenizer::breakToTokens(){
     return tokens;
 }
 
-void tokenizer::processBlank() {
+void tokenizer::processNewLine(){
+    file[curPos] = '\0';
+    isNewToken = true;
+    ++line;
+}
+
+void tokenizer::processSpace() {
     file[curPos] = '\0';
     isNewToken = true;
 }
@@ -159,11 +166,12 @@ void tokenizer::processComment() {
         file[curPos++] = '\0';
     }while(curPos < fSize && !isEOL(file[curPos]));
     isNewToken = true;
+    ++line;
 }
 
 void tokenizer::processConstChar() {
     file[curPos++] = '\0';
-    tokens.emplace_back(file + curPos, token::tokenType::CONST);
+    tokens.emplace_back(file + curPos, token::tokenType::CONST, token::varType::CHAR);
     isNewToken = true;
 
     do{
@@ -178,11 +186,18 @@ void tokenizer::processNegation() {
 }
 
 void tokenizer::processParenthesisOpened() {
-    op("(");
+    abandonIfEmpty();
+
+    auto prevToken = tokens.back();
+    if (prevToken.gettType() == token::tokenType::VAR){
+        prevToken.settType(token::tokenType::PROC);
+    }
+
+    sep("(");
 }
 
 void tokenizer::processParenthesisClosed() {
-    op(")");
+    csep(")");
 }
 
 void tokenizer::processMult() {
@@ -194,7 +209,7 @@ void tokenizer::processAdd() {
 }
 
 void tokenizer::processComma() {
-    op(",");
+    sep(",");
 }
 
 void tokenizer::processSub() {
@@ -210,23 +225,62 @@ void tokenizer::processModulo() {
 }
 
 void tokenizer::processDot() {
-    op(".");
+    // for now:
+    throw std::runtime_error("[ERROR] Dot character ('.') should only be used during literal values typing\nIn future use of classes");
+//    sep(".");
 }
 
 void tokenizer::processNumber() {
+    abandonIfEmpty();
+
+    auto prevToken = tokens.back();
+    if (prevToken.gettType() == token::tokenType::OPER
+        || prevToken.gettType() == token::tokenType::SEPARATOR)
+        // goes through only legal numerical literals possibilities
+    {
+        const char* const begin = file + curPos;
+        char* end;
+
+        double val = strtod(begin, &end);
+
+        if (end != begin)
+            // strtod return end == begin when error happened
+        {
+            isNewToken = true;
+
+            // curPos should indicate an already used character because of the main tokenizer loop
+            curPos += (end - begin) - 1;
+
+            tokens.emplace_back(begin, token::tokenType::CONST, token::varType::NUM);
+            tokens.back().setNumVal(val);
+        }
+        else [[unlikely]]{
+            const std::string msg = "[ERROR] Invalid literal passed on line: ";
+            throw std::runtime_error(msg + std::to_string(line ) + '\n');
+        }
+    }
+    else if (file[curPos-1] != '\0' && (prevToken.gettType() == token::tokenType::VAR
+            || prevToken.gettType() == token::tokenType::PROC))
+    {
+        // Does nothing, cuz its only part of some name
+    }
+    else [[unlikely]]{
+        const std::string msg = "[ERROR] Invalid use of literal number on line: ";
+        throw std::runtime_error(msg + std::to_string(line) + '\n');
+    }
 
 }
 
 void tokenizer::processColon() {
-    op(":");
+    sep(":");
 }
 
 void tokenizer::processInvalidChar() {
-    const char* msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use if prohibited!\n";
+    const std::string msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use is prohibited!\n";
+    const std::string whatChar = std::string("Char: ") + file[curPos] + '\n';
+    const std::string position = std::string ("On line: ") + std::to_string(line) + '\n';
 
-    std::cerr << msg << "Char: " << file[curPos] << "\nPosition: " << curPos;
-
-    throw std::runtime_error(msg);
+    throw std::runtime_error(msg + whatChar + position);
 }
 
 void tokenizer::processSmaller() {
@@ -242,18 +296,18 @@ void tokenizer::processBigger() {
 }
 
 void tokenizer::processEmptyChar() {
-    if (isNewToken){
+    if (isNewToken)[[unlikely]]{
         isNewToken = false;
         tokens.emplace_back(file + curPos, token::tokenType::VAR);
     }
 }
 
 void tokenizer::processIndexOpen() {
-    op("[");
+    sep("[");
 }
 
 void tokenizer::processIndexClose() {
-    op("]");
+    csep("]");
 }
 
 void tokenizer::processPow() {

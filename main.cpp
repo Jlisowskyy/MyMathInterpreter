@@ -6,12 +6,16 @@
 #include <chrono>
 #include <iostream>
 
-int main(){
+int main(int argc, const char** argv){
+    if (argc < 2){
+        throw std::runtime_error("[ERROR] Missing file name");
+    }
+
     parserUnit parU{};
     parU.EnableSaveToFile();
 
     auto start = std::chrono::steady_clock::now();
-    parU.processFile("C:\\Users\\Jlisowskyy\\Desktop\\Projekty\\Interpreter\\TestedProgram");
+    parU.processFile(argv[1]);
     auto stop = std::chrono::steady_clock::now();
 
     std::cout << std::endl << (double)(stop.time_since_epoch() - start.time_since_epoch()).count() * 1e-6;

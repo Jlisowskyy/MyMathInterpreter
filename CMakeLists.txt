@@ -15,4 +15,4 @@ add_executable(Interpreter
         include/tokenizer.h
         src/tokenizer.cpp)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-O3;)

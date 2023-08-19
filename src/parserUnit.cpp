@@ -21,8 +21,8 @@ std::string getTodayDate(bool displaySeconds = false) {
 
     if (displaySeconds) stream << std::setw(2) << tStr->tm_sec << '_';
 
-    stream << std::setw(2) << tStr->tm_hour <<  std::setw(2)<< tStr->tm_min << '_' << tStr->tm_mday
-        << '_' << (1 + tStr->tm_mon) << '_' << std::setw(4) << (tStr->tm_year + 1900);
+    stream  << tStr->tm_mday << '_' << (1 + tStr->tm_mon) << '_' << std::setw(4) << (tStr->tm_year + 1900)
+            << '_' << std::setw(2) << tStr->tm_hour <<  std::setw(2)<< tStr->tm_min;
 
     return stream.str();
 }
@@ -47,8 +47,9 @@ size_t chopConstChar(char * file, size_t curPos) {
 #ifdef DEBUG_
 
 void writeListOut(std::ofstream &dst, std::list<token> &list){
-    static const char* tTypeNames[5] =
-            {"UNKNOWN", "VAR", "CONST", "PROC", "OPER"};
+    static const char* tTypeNames[] =
+            {"UNKNOWN", "VAR", "CONST", "PROC", "OPER",
+             "KEYWORD", "SEPARATOR", "CSEPARATOR"};
 
     unsigned acc = 0;
     for (auto& i : list){
@@ -110,11 +111,12 @@ size_t parserUnit::loadReadFile(std::ifstream& fstr) {
         throw std::runtime_error("[ERROR] Passed file is bigger than quota\n");
     }
 
-    fileContent = new (std::nothrow) char[fSize];
+    fileContent = new (std::nothrow) char[fSize + 1];
 
     if(fileContent == nullptr){
         throw std::runtime_error("[ERROR] Not able to allocate memory big enough to fit whole file\n");
     }
+    fileContent[fSize] = '\0';
 
     fstr.read(fileContent, fSize);
     fstr.close();
