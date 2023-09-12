@@ -47,13 +47,103 @@ size_t chopConstChar(char * file, size_t curPos) {
 #ifdef DEBUG_
 
 void writeListOut(std::ofstream &dst, std::list<token> &list){
-    static const char* tTypeNames[] =
-            {"UNKNOWN", "VAR", "CONST", "PROC", "OPER",
-             "KEYWORD", "SEPARATOR", "CSEPARATOR"};
+    static const char* tTypeNames[] ={
+    "VAR",
+    "CONST",
+    "PROC",
+    "BIN_OP",
+    "UN_OP",
+    "KEYWORD",
+    "SEPARATOR",
+    "CSEPARATOR",
+    "ERROR_TYPE"
+    };
+
+    static const char* binOpTypeNames[] = {
+        "ADD",
+        "SUB",
+        "MULT",
+        "POW",
+        "DIVIDE",
+        "MOD",
+        "AND",
+        "OR",
+        "SMALLER_THAN",
+        "BIGGER_THAN",
+        "EQUAL",
+        "SMALLER_EQUAL_THAN",
+        "BIGGER_EQUAL_THAN",
+        "ASSIGN",
+        "ERROR_BINOP"
+    };
+
+    static const char* unaryOpTypeNames[] = {
+        "LOGICAL_NEGATION",
+        "MATHEMATICAL_NEGATION",
+        "ERROR_UNOP"
+    };
+
+    static const char* keyWordTypeNames[] = {
+        "IF",
+        "ELIF",
+        "ELSE",
+        "ENDIF",
+        "FOR",
+        "WHILE",
+        "END",
+        "ERROR_KEYWORD"
+    };
+
+    static const char* constTypeNames[] = {
+        "FLOATING_POINT",
+        "INTEGER",
+        "CONST_CHAR",
+        "ERROR_CONST"
+    };
+
+    auto printTokenName = [&](token& x) -> void {
+        switch (auto tInfo = x.getTokenInfo(); tInfo.tType) {
+            case token::tokenInfo::tokenType::VAR:
+                dst << x.getIdentifier();
+                break;
+            case token::tokenInfo::tokenType::CONST:
+                if (tInfo.cType == token::tokenInfo::constType::FLOATING_POINT)
+                    dst << x.getFpVal();
+                else if (tInfo.cType == token::tokenInfo::constType::INTEGER)
+                    dst << x.getIntVal();
+                else if (tInfo.cType == token::tokenInfo::constType::CONST_CHAR)
+                    dst << x.getConstCharVal();
+                else
+                    dst << "[ERROR]";
+                break;
+            case token::tokenInfo::tokenType::PROC:
+                dst << x.getIdentifier();
+                break;
+            case token::tokenInfo::tokenType::BIN_OP:
+                dst << binOpTypeNames[(size_t)(x.getTokenInfo().bOpType)];
+                break;
+            case token::tokenInfo::tokenType::UN_OP:
+                dst << unaryOpTypeNames[(size_t)(x.getTokenInfo().uOpType)];
+                break;
+            case token::tokenInfo::tokenType::KEYWORD:
+                dst << keyWordTypeNames[(size_t)(x.getTokenInfo().kWordType)];
+                break;
+            case token::tokenInfo::tokenType::SEPARATOR:
+                dst << x.getTokenVal();
+                break;
+            case token::tokenInfo::tokenType::CSEPARATOR:
+                dst << x.getTokenVal();
+                break;
+            case token::tokenInfo::tokenType::UNKNOWN:
+                dst << "ERROR_NAME";
+                break;
+        }
+    };
 
     unsigned acc = 0;
     for (auto& i : list){
-        dst << i.getToken() << "{ "<< (tTypeNames[(int)i.gettType()]) << " }";
+        printTokenName(i);
+        dst << "{ " << (tTypeNames[(size_t)(i.getTokenInfo().tType)]) << " }";
 
         if (++acc % 5 == 0) dst << '\n';
         if (acc != list.size()) dst << " --> ";

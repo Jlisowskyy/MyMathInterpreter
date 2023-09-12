@@ -6,14 +6,21 @@
     - 487, 0.46, 1e+9 - numerical literals
 
 3) <Letter><rest of name> - identifier
+    <list of <X>> is < < <X><< <,> < list of <X> > > / <> >> / <> >
 
 4) Expressions:
     - <identifier/Const>
     - <Unary Operand><expression>
     - <expression> <Binary Operand> <expression>
-    - <identifier><(><list of <expression>><)>, where <list of <expressions>> is <> or <expression> or <list of <expression>><<,><expression>>
+    - <identifier><(><list of <expression>><)
 
-5) <expression><;> - sentence
+5)  Sentences:
+    - <expression><;>
+    - <if> <expression><;> <list of <sentence>>
+        <<<elif><expression><;><list of <sentence>>>/<>>
+        <<else><list of <sentence>>>/<>> <endif>
+    - for <begin><:><jump><:><end>
+        <list of <sentence>>
 
 6) Separators:
     - ',' - separator used in <list of <expressions>>
@@ -35,5 +42,9 @@
     - <identifier><(><list of expressions<)>
     - <(><expression><)> - sets priority in arithmetic operations ( "()" ),
     - <[><expression evaluating to integer type><]> - indexing operator ( "[]" ),
-    - <numerical type><bin operand><numerical type> - where bind operand = [ '*', '+', '-', '/', '%', '<', '>' ],
+    - <numerical type><bin operand><numerical type> - where bind operand = [ '*', '+', '-', '/', '%', '<', '>', '==', '<=', '>=', '!=' ],
     - <memory object> <"=" operator> <memory savable object>
+
+9) Built-in functions:
+
+10)

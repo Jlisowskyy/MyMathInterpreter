@@ -1,0 +1,8 @@
+//
+// Created by Jlisowskyy on 12/09/2023.
+//
+
+#ifndef INTERPRETER_OPERATORSPROC_H
+#define INTERPRETER_OPERATORSPROC_H
+
+#endif //INTERPRETER_OPERATORSPROC_H

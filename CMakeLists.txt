@@ -13,6 +13,10 @@ add_executable(Interpreter
         src/token.cpp
         include/errors.h
         include/tokenizer.h
-        src/tokenizer.cpp)
+        src/tokenizer.cpp
+        include/ASTProducer.h
+        src/ASTProducer.cpp
+        include/AST.h
+        include/operatorsProc.h)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-O3;-march=native;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;)

@@ -11,13 +11,13 @@
 #include <stack>
 
 class tokenizer{
-    std::list<token> tokens;
-    std::stack<char> separatorStack;
-    char* file = nullptr;
-    size_t fSize = 0;
-    size_t curPos = 0;
-    size_t line = 1;
-    bool isNewToken = false;
+    std::list<token> tokens {};
+    std::stack<char> separatorStack {};
+    char* file { nullptr };
+    size_t fSize { 0 };
+    size_t curPos { 0 };
+    size_t line { 1 };
+    bool isNewToken { false };
 
     using reactProc = void(tokenizer::*)();
     const static reactProc reactionMap[ASCII_SIZE];
@@ -31,10 +31,10 @@ private:
     }
 
 
-    inline void op(const char* ptr);;
-    inline void sep(const char* ptr);
-    inline void oSep(const char* ptr);
-    inline void cSep(const char* ptr);
+//    inline void op(char val);;
+    inline void sep(char val);
+    inline void cSep(char val);
+    inline void op(token::tokenInfo tInfo);
 
     inline void Nothing() {}
     inline void processComment();
@@ -65,7 +65,9 @@ private:
     inline void processAND();
     inline void processSemiColon();
 public:
-    tokenizer(char* file, size_t size): file{ file }, fSize { size }{}
+    tokenizer(char* file, size_t size): file{ file }, fSize { size }{
+        tokens.emplace_back(';', token::tokenInfo(token::tokenType::SEPARATOR));
+    }
     std::list<token> breakToTokens();
 };
 

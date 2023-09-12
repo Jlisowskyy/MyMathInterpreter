@@ -13,6 +13,9 @@
 constexpr const char* parserDebugDestDefault { R"(C:/Users/Jlisowskyy\Desktop\Projekty\Interpreter\DebugLogs\)" };
 constexpr const char* parserLogsDestDefault { R"(C:\Users\Jlisowskyy\Desktop\Projekty\Interpreter\Logs\)" };
 
+using FloatingPointType = double;
+using IntegerType = long long int;
+
 constexpr char commentChar { '#' };
 constexpr char EOL { '\n' };
 constexpr size_t ASCII_SIZE { 128 };
