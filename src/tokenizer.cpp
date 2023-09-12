@@ -70,7 +70,7 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] = {
         &tokenizer::processNumber,
         &tokenizer::processNumber,
         &tokenizer::processColon,
-        &tokenizer::processInvalidChar, // ;
+        &tokenizer::processSemiColon, // ;
         &tokenizer::processSmaller,
         &tokenizer::processEqual,
         &tokenizer::processBigger,
@@ -141,6 +141,38 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] = {
         &tokenizer::Nothing
 };
 
+void tokenizer::cSep(const char *ptr) {
+    tokens.emplace_back(ptr, token::tokenType::CSEPARATOR);
+
+    auto lastOpenedSep = separatorStack.top();
+    if (lastOpenedSep != ptr[0]) [[unlikely]]{
+        static const std::string msg = "[ERROR] Not correctly closed separator: ";
+        throw std::runtime_error(msg + ptr[0] + "\nOn line: " + std::to_string(line) + '\n');
+    }
+    else separatorStack.pop();
+
+    isNewToken = true;
+    file[curPos] = '\0';
+}
+
+void tokenizer::sep(const char *ptr) {
+    tokens.emplace_back(ptr, token::tokenType::SEPARATOR);
+    isNewToken = true;
+    file[curPos] = '\0';
+}
+
+void tokenizer::op(const char *ptr) {
+    tokens.emplace_back(ptr, token::tokenType::OPER);
+    isNewToken= true;
+    file[curPos] = '\0';
+}
+
+void tokenizer::oSep(const char *ptr) {
+    tokens.emplace_back(ptr, token::tokenType::SEPARATOR);
+    isNewToken = true;
+    file[curPos] = '\0';
+}
+
 std::list<token> tokenizer::breakToTokens(){
     for (curPos = 0; curPos < fSize; ++curPos){
         void(tokenizer::*react)() = reactionMap[(unsigned char)file[curPos]];
@@ -193,11 +225,12 @@ void tokenizer::processParenthesisOpened() {
         prevToken.settType(token::tokenType::PROC);
     }
 
-    sep("(");
+    oSep("(");
+    separatorStack.push(')');
 }
 
 void tokenizer::processParenthesisClosed() {
-    csep(")");
+    cSep(")");
 }
 
 void tokenizer::processMult() {
@@ -255,7 +288,7 @@ void tokenizer::processNumber() {
             tokens.back().setNumVal(val);
         }
         else [[unlikely]]{
-            const std::string msg = "[ERROR] Invalid literal passed on line: ";
+            static const std::string msg = "[ERROR] Invalid literal passed on line: ";
             throw std::runtime_error(msg + std::to_string(line ) + '\n');
         }
     }
@@ -265,7 +298,7 @@ void tokenizer::processNumber() {
         // Does nothing, cuz its only part of some name
     }
     else [[unlikely]]{
-        const std::string msg = "[ERROR] Invalid use of literal number on line: ";
+        static const std::string msg = "[ERROR] Invalid use of literal number on line: ";
         throw std::runtime_error(msg + std::to_string(line) + '\n');
     }
 
@@ -276,7 +309,7 @@ void tokenizer::processColon() {
 }
 
 void tokenizer::processInvalidChar() {
-    const std::string msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use is prohibited!\n";
+    static const std::string msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use is prohibited!\n";
     const std::string whatChar = std::string("Char: ") + file[curPos] + '\n';
     const std::string position = std::string ("On line: ") + std::to_string(line) + '\n';
 
@@ -303,11 +336,12 @@ void tokenizer::processEmptyChar() {
 }
 
 void tokenizer::processIndexOpen() {
-    sep("[");
+    oSep("[");
+    separatorStack.push(']');
 }
 
 void tokenizer::processIndexClose() {
-    csep("]");
+    cSep("]");
 }
 
 void tokenizer::processPow() {
@@ -320,4 +354,12 @@ void tokenizer::processOR() {
 
 void tokenizer::processAND() {
     op("&");
+}
+
+void tokenizer::processSemiColon() {
+    if (!separatorStack.empty()) [[unlikely]]{
+        static const std::string msg = "[ERROR] Not closed separator. Lack of: \"";
+        throw std::runtime_error(msg + separatorStack.top() + "\", on line: " + std::to_string(line) + '\n');
+    }
+    sep(";");
 }

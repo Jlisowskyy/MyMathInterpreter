@@ -5,12 +5,14 @@
 #ifndef INTERPRETER_TOKENIZER_H
 #define INTERPRETER_TOKENIZER_H
 
-#include "../include/globalMacros.h"
+#include "../include/globalValues.h"
 #include "../include/token.h"
 #include <list>
+#include <stack>
 
 class tokenizer{
     std::list<token> tokens;
+    std::stack<char> separatorStack;
     char* file = nullptr;
     size_t fSize = 0;
     size_t curPos = 0;
@@ -29,23 +31,10 @@ private:
     }
 
 
-    inline void op(const char* ptr){
-        tokens.emplace_back(ptr, token::tokenType::OPER);
-        isNewToken= true;
-        file[curPos] = '\0';
-    };
-
-    inline void sep(const char* ptr){
-        tokens.emplace_back(ptr, token::tokenType::SEPARATOR);
-        isNewToken = true;
-        file[curPos] = '\0';
-    }
-
-    inline void csep(const char* ptr){
-        tokens.emplace_back(ptr, token::tokenType::CSEPARATOR);
-        isNewToken = true;
-        file[curPos] = '\0';
-    }
+    inline void op(const char* ptr);;
+    inline void sep(const char* ptr);
+    inline void oSep(const char* ptr);
+    inline void cSep(const char* ptr);
 
     inline void Nothing() {}
     inline void processComment();
@@ -74,6 +63,7 @@ private:
     inline void processPow();
     inline void processOR();
     inline void processAND();
+    inline void processSemiColon();
 public:
     tokenizer(char* file, size_t size): file{ file }, fSize { size }{}
     std::list<token> breakToTokens();

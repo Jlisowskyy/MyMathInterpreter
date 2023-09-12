@@ -7,7 +7,7 @@ add_executable(Interpreter
         main.cpp
         include/parserUnit.h
         src/MyMathInterpreter.cpp
-        include/globalMacros.h
+        include/globalValues.h
         src/parserUnit.cpp
         include/token.h
         src/token.cpp
@@ -15,4 +15,4 @@ add_executable(Interpreter
         include/tokenizer.h
         src/tokenizer.cpp)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-O3;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-O3;-march=native;)

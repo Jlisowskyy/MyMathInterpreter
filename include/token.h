@@ -5,7 +5,7 @@
 #ifndef INTERPRETER_TOKEN_H
 #define INTERPRETER_TOKEN_H
 
-#include "globalMacros.h"
+#include "globalValues.h"
 
 class token{
     const char* tokenVal;

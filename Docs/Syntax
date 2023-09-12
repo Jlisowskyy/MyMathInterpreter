@@ -1,0 +1,39 @@
+1) # Comment till EOL
+
+2) Const values :
+    - true/false
+    - "const char string"
+    - 487, 0.46, 1e+9 - numerical literals
+
+3) <Letter><rest of name> - identifier
+
+4) Expressions:
+    - <identifier/Const>
+    - <Unary Operand><expression>
+    - <expression> <Binary Operand> <expression>
+    - <identifier><(><list of <expression>><)>, where <list of <expressions>> is <> or <expression> or <list of <expression>><<,><expression>>
+
+5) <expression><;> - sentence
+
+6) Separators:
+    - ',' - separator used in <list of <expressions>>
+7)  Keywords:
+    - true -> translates to '1' literal
+    - false -> translates to '0' literal
+    - if
+    - else
+    - elif
+    - endif <-- for ifs
+    - for
+    - while
+    - end <-- for loops
+    - continue [ future ]
+    - break [ future ]
+
+8) Operators:
+
+    - <identifier><(><list of expressions<)>
+    - <(><expression><)> - sets priority in arithmetic operations ( "()" ),
+    - <[><expression evaluating to integer type><]> - indexing operator ( "[]" ),
+    - <numerical type><bin operand><numerical type> - where bind operand = [ '*', '+', '-', '/', '%', '<', '>' ],
+    - <memory object> <"=" operator> <memory savable object>

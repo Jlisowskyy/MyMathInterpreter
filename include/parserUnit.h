@@ -7,18 +7,18 @@
 #include <fstream>
 #include <list>
 
-#include "globalMacros.h"
+#include "globalValues.h"
 #include "../include/tokenizer.h"
 
 class parserUnit{
     // Logging simple messages and occurred problems
     bool saveLogToFile = false;
-    const char* logDest = ParserLogsDestDefault;
+    const char* logDest = parserLogsDestDefault;
     std::ofstream logFile;
     char* fileContent = nullptr;
 
 #ifdef DEBUG_
-    const char* debugDest = ParserDebugDestDefault;
+    const char* debugDest = parserDebugDestDefault;
     std::ofstream debugLogFile;
 #endif
 

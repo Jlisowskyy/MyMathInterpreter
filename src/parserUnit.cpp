@@ -56,8 +56,9 @@ void writeListOut(std::ofstream &dst, std::list<token> &list){
         dst << i.getToken() << "{ "<< (tTypeNames[(int)i.gettType()]) << " }";
 
         if (++acc % 5 == 0) dst << '\n';
-        dst << " --> ";
+        if (acc != list.size()) dst << " --> ";
     }
+    dst << std::endl;
 }
 
 #endif
@@ -72,7 +73,8 @@ void parserUnit::openLogFile(std::ofstream &fstr, const char *dest) {
         return;
     }
 
-    fstr << getTodayDate(true) << "\n------------------------------------------------\n";
+    static constexpr const char* WideSep { "------------------------------------------------\n" };
+    fstr << WideSep<< getTodayDate(true) << '\n' << WideSep ;
 }
 
 void parserUnit::openReadFile(std::ifstream &fstr, const char *src) {
