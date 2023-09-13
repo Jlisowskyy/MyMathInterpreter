@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 
 #define DEBUG_
 
@@ -51,5 +52,11 @@ constexpr bool isConstChar(const char x){
 constexpr bool isEOF(const char x){
     return x == EOF;
 }
+
+struct stringCmp{
+    bool operator()(const char* a, const char* b) const {
+        return std::strcmp(a, b) == 0;
+    }
+};
 
 #endif //INTERPRETER_GLOBALVALUES_H

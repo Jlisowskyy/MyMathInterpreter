@@ -10,7 +10,7 @@
 
 using rProc = void(tokenizer::*)();
 
-const rProc tokenizer::reactionMap[ASCII_SIZE] = {
+const rProc tokenizer::reactionMap[ASCII_SIZE] {
         &tokenizer::Nothing,
         &tokenizer::Nothing,
         &tokenizer::Nothing,
@@ -141,6 +141,35 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] = {
         &tokenizer::Nothing
 };
 
+const std::unordered_map<const char*, token::tokenInfo::keywordType, std::hash<const char*>, stringCmp> tokenizer::keyWordMap{
+    std::make_pair("if", token::tokenInfo::keywordType::IF),
+    std::make_pair("elif", token::tokenInfo::keywordType::ELIF),
+    std::make_pair("else", token::tokenInfo::keywordType::ELSE),
+    std::make_pair("endif", token::tokenInfo::keywordType::ENDIF),
+    std::make_pair("for", token::tokenInfo::keywordType::FOR),
+    std::make_pair("while", token::tokenInfo::keywordType::WHILE),
+    std::make_pair("end", token::tokenInfo::keywordType::END),
+};
+
+void tokenizer::expectNewToken() {
+    isNewToken = true;
+
+    if (auto& prevToken = tokens.back(); prevToken.getTokenInfo().tType == token::tokenInfo::tokenType::VAR){
+//        if (auto iter = keyWordMap.find(prevToken.getIdentifier()); iter != keyWordMap.end()){
+//            prevToken.setTokenInfo(token::tokenInfo(iter->second));
+//        }
+
+        auto id = prevToken.getIdentifier();
+        if (std::strcmp(id, "if") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::IF));
+        else if (std::strcmp(id, "elif") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ELIF));
+        else if (std::strcmp(id, "else") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ELSE));
+        else if (std::strcmp(id, "endif") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ENDIF));
+        else if (std::strcmp(id, "for") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::FOR));
+        else if (std::strcmp(id, "while") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::WHILE));
+        else if (std::strcmp(id, "end") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::END));
+    }
+}
+
 void tokenizer::cSep(char val) {
     tokens.emplace_back(val, token::tokenInfo(token::tokenInfo::tokenType::CSEPARATOR));
 
@@ -150,21 +179,21 @@ void tokenizer::cSep(char val) {
         throw std::runtime_error(msg + val + "\nOn line: " + std::to_string(line) + '\n');
     }
     else separatorStack.pop();
-
-    isNewToken = true;
     file[curPos] = '\0';
+
+    expectNewToken();
 }
 
 void tokenizer::sep(char val) {
     tokens.emplace_back(val, token::tokenInfo(token::tokenInfo::tokenType::SEPARATOR));
-    isNewToken = true;
     file[curPos] = '\0';
+    expectNewToken();
 }
 
 inline void tokenizer::op(token::tokenInfo tInfo) {
     tokens.emplace_back(tInfo);
-    isNewToken= true;
     file[curPos] = '\0';
+    expectNewToken();
 }
 
 std::list<token> tokenizer::breakToTokens(){
@@ -178,21 +207,21 @@ std::list<token> tokenizer::breakToTokens(){
 
 void tokenizer::processNewLine(){
     file[curPos] = '\0';
-    isNewToken = true;
     ++line;
+    expectNewToken();
 }
 
 void tokenizer::processSpace() {
     file[curPos] = '\0';
-    isNewToken = true;
+    expectNewToken();
 }
 
 void tokenizer::processComment() {
     do{
         file[curPos++] = '\0';
     }while(curPos < fSize && !isEOL(file[curPos]));
-    isNewToken = true;
     ++line;
+    expectNewToken();
 }
 
 void tokenizer::processConstChar() {
@@ -200,13 +229,13 @@ void tokenizer::processConstChar() {
     token temp {token::tokenInfo(token::tokenInfo::constType::CONST_CHAR) };
     temp.setConstCharVal(file + curPos);
     tokens.push_back(temp);
-    isNewToken = true;
 
     do{
         throwIfQMLack(file[curPos]);
     }while(!isConstChar(file[++curPos]));
 
     file[curPos] = '\0';
+    expectNewToken();
 }
 
 void tokenizer::processNegation() {
@@ -285,11 +314,11 @@ void tokenizer::processNumber() {
         if (end != begin)
             // strtod return end == begin when error happened
         {
-            isNewToken = true;
             // curPos should indicate an already used character because of the main tokenizer loop
             curPos += (end - begin) - 1;
 
             tokens.emplace_back(intVal, token::tokenInfo(token::tokenInfo::constType::INTEGER));
+            expectNewToken();
         }
         else{
             // TODO: sensitive to change of FloatingPointType
@@ -300,11 +329,11 @@ void tokenizer::processNumber() {
                 throw std::runtime_error(msg + std::to_string(line ) + '\n');
             }
 
-            isNewToken = true;
             // curPos should indicate an already used character because of the main tokenizer loop
             curPos += (end - begin) - 1;
 
             tokens.emplace_back(fpVal, token::tokenInfo(token::tokenInfo::constType::FLOATING_POINT));
+            expectNewToken();
         }
     }
     else [[unlikely]]{

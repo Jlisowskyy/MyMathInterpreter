@@ -9,6 +9,7 @@
 #include "../include/token.h"
 #include <list>
 #include <stack>
+#include <unordered_map>
 
 class tokenizer{
     std::list<token> tokens {};
@@ -20,8 +21,9 @@ class tokenizer{
     bool isNewToken { false };
 
     using reactProc = void(tokenizer::*)();
-    const static reactProc reactionMap[ASCII_SIZE];
-
+    // TODO: optimise gain possible: look for constexpr reacitonMap, keywordMap
+    static const reactProc reactionMap[ASCII_SIZE];
+    static const std::unordered_map<const char*, token::tokenInfo::keywordType, std::hash<const char*>, stringCmp> keyWordMap;
 private:
     inline void abandonIfEmpty() noexcept(false){
         if (tokens.empty()) [[unlikely]]
@@ -30,6 +32,7 @@ private:
         }
     }
 
+    inline void expectNewToken();
 
 //    inline void op(char val);;
     inline void sep(char val);

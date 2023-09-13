@@ -19,4 +19,4 @@ add_executable(Interpreter
         include/AST.h
         include/operatorsProc.h)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;-O3;)

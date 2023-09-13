@@ -101,6 +101,7 @@ public:
     inline void setIdentifier(const char* val) { identifier = val; }
     inline const tokenInfo& getTokenInfo() const { return tInfo; }
     inline tokenInfo& setTokenInfo() { return tInfo; }
+    inline void setTokenInfo(tokenInfo val) { tInfo = val; }
     inline void setFpVal(FloatingPointType val) { fpVal = val; }
     inline void setIntVal(IntegerType val) { inVal = val; }
     inline void setConstCharVal(const char* val) { constCharVal = val; }

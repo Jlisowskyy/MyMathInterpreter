@@ -91,6 +91,8 @@ void writeListOut(std::ofstream &dst, std::list<token> &list){
         "FOR",
         "WHILE",
         "END",
+        "TRUE",
+        "FALSE",
         "ERROR_KEYWORD"
     };
 
