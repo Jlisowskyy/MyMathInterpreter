@@ -1,19 +1,19 @@
 #this is COM
 
-var1 = true;
+#var1 = true;
 
-if var1;
-    print("Hello World");
-endif
+#if var1;
+#    print("Hello World");
+#endif
 
-for i = 1:2:100;
-    print("Hello World!\n");
-end
+#for i = 1:2:100;
+#   print("Hello World!\n");
+#end
 
-var2 = 5;
+#var2 = 5;
 
-while var2 > 0;
-    print("Goodbye World!\n");
-end
+#while var2 > 0;
+#    print("Goodbye World!\n");
+#end
 
 var2 = 5 * 4 + 7 * 3;

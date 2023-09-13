@@ -13,7 +13,7 @@
 
 class tokenizer{
     std::list<token> tokens {};
-    std::stack<char> separatorStack {};
+    std::stack<separatorType> separatorStack {};
     char* file { nullptr };
     size_t fSize { 0 };
     size_t curPos { 0 };
@@ -23,7 +23,7 @@ class tokenizer{
     using reactProc = void(tokenizer::*)();
     // TODO: optimise gain possible: look for constexpr reacitonMap, keywordMap
     static const reactProc reactionMap[ASCII_SIZE];
-    static const std::unordered_map<const char*, token::tokenInfo::keywordType, std::hash<const char*>, stringCmp> keyWordMap;
+    static const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> keyWordMap;
 private:
     inline void abandonIfEmpty() noexcept(false){
         if (tokens.empty()) [[unlikely]]
@@ -35,8 +35,8 @@ private:
     inline void expectNewToken();
 
 //    inline void op(char val);;
-    inline void sep(char val);
-    inline void cSep(char val);
+    inline void sep(separatorType type);
+    inline void cSep(separatorType type);
     inline void op(token::tokenInfo tInfo);
 
     inline void Nothing() {}
@@ -69,7 +69,7 @@ private:
     inline void processSemiColon();
 public:
     tokenizer(char* file, size_t size): file{ file }, fSize { size }{
-        tokens.emplace_back(';', token::tokenInfo(token::tokenType::SEPARATOR));
+        tokens.emplace_back(token::tokenInfo(separatorType::SEMI_COLON));
     }
     std::list<token> breakToTokens();
 };

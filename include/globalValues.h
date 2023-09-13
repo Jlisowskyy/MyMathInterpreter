@@ -11,11 +11,15 @@
 
 #define DEBUG_
 
+// TODO: CHECK FOR BETTER ORDER OF TOKENS TYPES
+
 constexpr const char* parserDebugDestDefault { R"(C:/Users/Jlisowskyy\Desktop\Projekty\Interpreter\DebugLogs\)" };
 constexpr const char* parserLogsDestDefault { R"(C:\Users\Jlisowskyy\Desktop\Projekty\Interpreter\Logs\)" };
 
 using FloatingPointType = double;
 using IntegerType = long long int;
+using VectorType = int; // TODO
+using MatrixType = int; // TODO
 
 constexpr char commentChar { '#' };
 constexpr char EOL { '\n' };
@@ -57,6 +61,179 @@ struct stringCmp{
     bool operator()(const char* a, const char* b) const {
         return std::strcmp(a, b) == 0;
     }
+};
+
+// TODO: ordered by usage frequency???
+enum class tokenType{
+    VAR,
+    SEPARATOR,
+    PROC,
+    BIN_OP,
+    KEYWORD,
+    UN_OP,
+    CONST,
+    UNKNOWN,
+};
+
+enum class separatorType{
+    SEMI_COLON,
+    PARENTHESIS_OPEN,
+    PARENTHESIS_CLOSED,
+    COMMA,
+    ANGLE_BRACKETS_OPEN,
+    ANGLE_BRACKETS_CLOSED,
+    COLON,
+    UNKNOWN,
+};
+
+enum class constType{
+    FLOATING_POINT,
+    INTEGER,
+    CONST_CHAR,
+    UNKNOWN
+};
+
+enum class keywordType{
+    IF,
+    ENDIF,
+    FOR,
+    END,
+    ELSE,
+    ELIF,
+    WHILE,
+    UNKNOWN
+};
+
+enum class binOpType{
+    ADD,
+    SUB,
+    MULT,
+    POW,
+    DIVIDE,
+    MOD,
+    AND,
+    OR,
+    SMALLER_THAN,
+    BIGGER_THAN,
+    EQUAL,
+    SMALLER_EQUAL_THAN,
+    BIGGER_EQUAL_THAN,
+    ASSIGN,
+    UNKNOWN,
+};
+
+enum class unaryOpType{
+    LOGICAL_NEGATION,
+    MATHEMATICAL_NEGATION,
+    UNKNOWN,
+};
+
+enum class dataType {
+    floatingPoint,
+    matrix,
+    vector,
+    integer,
+    constChar,
+    voidType
+};
+
+static const char* tTypeNames[] ={
+        "VAR",
+        "SEPARATOR",
+        "PROC",
+        "BIN_OP",
+        "KEYWORD",
+        "UN_OP",
+        "CONST",
+        "UNKNOWN",
+};
+
+static const char* keyWordTypeNames[] = {
+        "IF",
+        "ENDIF",
+        "FOR",
+        "END",
+        "ELSE",
+        "ELIF",
+        "WHILE",
+        "UNKNOWN KEYWORD",
+};
+
+static const char* constTypeNames[] = {
+        "FLOATING_POINT",
+        "INTEGER",
+        "CONST_CHAR",
+        "ERROR_CONST"
+};
+
+static const char* separatorTypeNames[] ={
+        "SEMI_COLON",
+        "PARENTHESIS_OPEN",
+        "PARENTHESIS_CLOSED",
+        "COMMA",
+        "ANGLE_BRACKETS_OPEN",
+        "ANGLE_BRACKETS_CLOSED",
+        "COLON",
+        "UNKNOWN",
+};
+
+static const char* separatorTypeSymbols[]={
+        ";",
+        "(",
+        ")",
+        ",",
+        "[",
+        "]",
+        ":",
+        "ERROR SEP TYPE",
+};
+
+static const char* binOpTypeNames[] = {
+        "ADD",
+        "SUB",
+        "MULT",
+        "POW",
+        "DIVIDE",
+        "MOD",
+        "AND",
+        "OR",
+        "SMALLER_THAN",
+        "BIGGER_THAN",
+        "EQUAL",
+        "SMALLER_EQUAL_THAN",
+        "BIGGER_EQUAL_THAN",
+        "ASSIGN",
+        "ERROR_BINOP"
+};
+
+static const char* binOpTypeSymbols[]={
+        "+",
+        "-",
+        "*",
+        "^",
+        "/",
+        "%",
+        "&",
+        "|",
+        "<",
+        ">",
+        "==",
+        "<=",
+        ">=",
+        "=",
+        "ERROR_UNOP",
+};
+
+static const char* unaryOpTypeNames[] = {
+        "LOGICAL_NEGATION",
+        "MATHEMATICAL_NEGATION",
+        "ERROR_UNOP"
+};
+
+static const char* unaryOpTypeSymbols[] = {
+        "!",
+        "-",
+        "ERROR_UNOP",
 };
 
 #endif //INTERPRETER_GLOBALVALUES_H

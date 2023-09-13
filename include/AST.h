@@ -7,25 +7,26 @@
 
 #include <exception>
 #include <stdexcept>
+#include <iostream>
+
+#include "globalValues.h"
+#include "operatorsProc.h"
+
 // Ready to execute object
 
 class AST;
+class ASTNode;
+class ASTProducer;
 
-enum class dataType {
-    floatingPoint, matrix, vector, integer, constChar, voidType
-};
-
-struct dataPack{
-    void* dataPtr { nullptr };
-    dataType dType { dataType::floatingPoint };
-};
+void printAST(ASTNode* head, int depth);
 
 class ASTNode{
     enum class nodeType{
         data, unaryOp, binaryOp, procedure
     } nType { nodeType::data };
 
-
+    binOpType bType;
+    unaryOpType uType;
 
     dataPack data{};
     ASTNode* leftExpression { nullptr };
@@ -33,25 +34,33 @@ class ASTNode{
 
     ASTNode** funcParams { nullptr };
 
-    dataPack eval(){
-        switch (nType) {
-            case nodeType::data:
-                return data;
-            case nodeType::unaryOp:
-                if (leftExpression == nullptr) [[unlikely]]{
-                    throw std::runtime_error("[ERROR] During creation of AST occurred some error: not complete tree\n");
-                }
-                leftExpression->eval();
-                break;
-            case nodeType::binaryOp:
-                break;
-            case nodeType::procedure:
-                break;
-        }
-    }
+    friend void printAST(ASTNode* head, int depth);
+    friend AST;
+    friend ASTProducer;
+
+    ASTNode(binOpType Type):
+        nType { nodeType::binaryOp }, bType { Type } {}
+    ASTNode(dataPack dPack):
+        nType { nodeType::data }, data { dPack } {}
+    ASTNode(unaryOpType Type):
+        nType { nodeType::unaryOp }, uType{ Type } {}
+    ~ASTNode();
+public:
+    dataPack eval();
 };
 
 class AST{
+    ASTNode* head { nullptr };
+public:
+    AST(ASTNode* newHead):
+        head { newHead } {}
+    ~AST(){
+        delete head;
+    }
+    dataPack eval(){
+        // TODO: nullptr check
+        return head->eval();
+    }
 
 };
 

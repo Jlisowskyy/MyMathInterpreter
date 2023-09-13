@@ -17,6 +17,8 @@ add_executable(Interpreter
         include/ASTProducer.h
         src/ASTProducer.cpp
         include/AST.h
-        include/operatorsProc.h)
+        include/operatorsProc.h
+        src/AST.cpp
+        src/operatorsProc.cpp)
 
 target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;-O3;)

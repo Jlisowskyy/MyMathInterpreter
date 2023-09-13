@@ -141,42 +141,42 @@ const rProc tokenizer::reactionMap[ASCII_SIZE] {
         &tokenizer::Nothing
 };
 
-const std::unordered_map<const char*, token::tokenInfo::keywordType, std::hash<const char*>, stringCmp> tokenizer::keyWordMap{
-    std::make_pair("if", token::tokenInfo::keywordType::IF),
-    std::make_pair("elif", token::tokenInfo::keywordType::ELIF),
-    std::make_pair("else", token::tokenInfo::keywordType::ELSE),
-    std::make_pair("endif", token::tokenInfo::keywordType::ENDIF),
-    std::make_pair("for", token::tokenInfo::keywordType::FOR),
-    std::make_pair("while", token::tokenInfo::keywordType::WHILE),
-    std::make_pair("end", token::tokenInfo::keywordType::END),
+const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> tokenizer::keyWordMap{
+    std::make_pair("if", keywordType::IF),
+    std::make_pair("elif", keywordType::ELIF),
+    std::make_pair("else", keywordType::ELSE),
+    std::make_pair("endif", keywordType::ENDIF),
+    std::make_pair("for", keywordType::FOR),
+    std::make_pair("while", keywordType::WHILE),
+    std::make_pair("end", keywordType::END),
 };
 
 void tokenizer::expectNewToken() {
     isNewToken = true;
 
-    if (auto& prevToken = tokens.back(); prevToken.getTokenInfo().tType == token::tokenInfo::tokenType::VAR){
+    if (auto& prevToken = tokens.back(); prevToken.getTokenInfo().tType == tokenType::VAR){
 //        if (auto iter = keyWordMap.find(prevToken.getIdentifier()); iter != keyWordMap.end()){
 //            prevToken.setTokenInfo(token::tokenInfo(iter->second));
 //        }
 
         auto id = prevToken.getIdentifier();
-        if (std::strcmp(id, "if") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::IF));
-        else if (std::strcmp(id, "elif") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ELIF));
-        else if (std::strcmp(id, "else") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ELSE));
-        else if (std::strcmp(id, "endif") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::ENDIF));
-        else if (std::strcmp(id, "for") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::FOR));
-        else if (std::strcmp(id, "while") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::WHILE));
-        else if (std::strcmp(id, "end") == 0) prevToken.setTokenInfo(token::tokenInfo(token::tokenInfo::keywordType::END));
+        if (std::strcmp(id, "if") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::IF));
+        else if (std::strcmp(id, "elif") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::ELIF));
+        else if (std::strcmp(id, "else") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::ELSE));
+        else if (std::strcmp(id, "endif") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::ENDIF));
+        else if (std::strcmp(id, "for") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::FOR));
+        else if (std::strcmp(id, "while") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::WHILE));
+        else if (std::strcmp(id, "end") == 0) prevToken.setTokenInfo(token::tokenInfo(keywordType::END));
     }
 }
 
-void tokenizer::cSep(char val) {
-    tokens.emplace_back(val, token::tokenInfo(token::tokenInfo::tokenType::CSEPARATOR));
+void tokenizer::cSep(separatorType type) {
+    tokens.emplace_back(token::tokenInfo(type));
 
     auto lastOpenedSep = separatorStack.top();
-    if (lastOpenedSep != val) [[unlikely]]{
+    if (lastOpenedSep != type) [[unlikely]]{
         static const std::string msg = "[ERROR] Not correctly closed separator: ";
-        throw std::runtime_error(msg + val + "\nOn line: " + std::to_string(line) + '\n');
+        throw std::runtime_error(msg + separatorTypeSymbols[(size_t) type] + "\nOn line: " + std::to_string(line) + '\n');
     }
     else separatorStack.pop();
     file[curPos] = '\0';
@@ -184,8 +184,8 @@ void tokenizer::cSep(char val) {
     expectNewToken();
 }
 
-void tokenizer::sep(char val) {
-    tokens.emplace_back(val, token::tokenInfo(token::tokenInfo::tokenType::SEPARATOR));
+void tokenizer::sep(separatorType type) {
+    tokens.emplace_back(token::tokenInfo(type));
     file[curPos] = '\0';
     expectNewToken();
 }
@@ -226,7 +226,7 @@ void tokenizer::processComment() {
 
 void tokenizer::processConstChar() {
     file[curPos++] = '\0';
-    token temp {token::tokenInfo(token::tokenInfo::constType::CONST_CHAR) };
+    token temp {token::tokenInfo(constType::CONST_CHAR) };
     temp.setConstCharVal(file + curPos);
     tokens.push_back(temp);
 
@@ -239,54 +239,54 @@ void tokenizer::processConstChar() {
 }
 
 void tokenizer::processNegation() {
-    op(token::tokenInfo(token::tokenInfo::unOpType::LOGICAL_NEGATION));
+    op(token::tokenInfo(unaryOpType::LOGICAL_NEGATION));
 }
 
 void tokenizer::processParenthesisOpened() {
     auto prevToken = tokens.back();
-    if (prevToken.getTokenInfo().tType == token::tokenType::VAR){
-        prevToken.setTokenInfo().tType = token::tokenType::PROC;
+    if (prevToken.getTokenInfo().tType == tokenType::VAR){
+        prevToken.setTokenInfo().tType = tokenType::PROC;
     }
 
-    sep('(');
-    separatorStack.push(')');
+    sep(separatorType::PARENTHESIS_OPEN);
+    separatorStack.push(separatorType::PARENTHESIS_CLOSED);
 }
 
 void tokenizer::processParenthesisClosed() {
-    cSep(')');
+    cSep(separatorType::PARENTHESIS_CLOSED);
 }
 
 void tokenizer::processMult() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::MULT));
+    op(token::tokenInfo(binOpType::MULT));
 }
 
 void tokenizer::processAdd() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::ADD));
+    op(token::tokenInfo(binOpType::ADD));
 }
 
 void tokenizer::processComma() {
-    sep(',');
+    sep(separatorType::COMMA);
 }
 
 void tokenizer::processSub() {
     auto prevTokenType = tokens.back().getTokenInfo().tType;
 
-    if (prevTokenType != token::tokenType::VAR
-        && prevTokenType != token::tokenType::PROC
-        && prevTokenType != token::tokenType::CONST){
-        op(token::tokenInfo(token::tokenInfo::unOpType::MATHEMATICAL_NEGATION));
+    if (prevTokenType != tokenType::VAR
+        && prevTokenType != tokenType::PROC
+        && prevTokenType != tokenType::CONST){
+        op(token::tokenInfo(unaryOpType::MATHEMATICAL_NEGATION));
     }
     else{
-        op(token::tokenInfo(token::tokenInfo::binOpType::SUB));
+        op(token::tokenInfo(binOpType::SUB));
     }
 }
 
 void tokenizer::processDiv() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::DIVIDE));
+    op(token::tokenInfo(binOpType::DIVIDE));
 }
 
 void tokenizer::processModulo() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::MOD));
+    op(token::tokenInfo(binOpType::MOD));
 }
 
 void tokenizer::processDot() {
@@ -300,10 +300,10 @@ void tokenizer::processNumber() {
 
     if (!isNewToken) return;
     else if (auto prevTokenType = tokens.back().setTokenInfo().tType;
-        prevTokenType == token::tokenType::BIN_OP
-        || prevTokenType == token::tokenType::UN_OP
-        || prevTokenType == token::tokenType::SEPARATOR
-        || prevTokenType == token::tokenType::KEYWORD)
+        prevTokenType == tokenType::BIN_OP
+        || prevTokenType == tokenType::UN_OP
+        || prevTokenType == tokenType::SEPARATOR
+        || prevTokenType == tokenType::KEYWORD)
         // goes through only legal numerical literals possibilities
     {
         const char* const begin { file + curPos };
@@ -317,7 +317,7 @@ void tokenizer::processNumber() {
             // curPos should indicate an already used character because of the main tokenizer loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(intVal, token::tokenInfo(token::tokenInfo::constType::INTEGER));
+            tokens.emplace_back(intVal, token::tokenInfo(constType::INTEGER));
             expectNewToken();
         }
         else{
@@ -332,7 +332,7 @@ void tokenizer::processNumber() {
             // curPos should indicate an already used character because of the main tokenizer loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(fpVal, token::tokenInfo(token::tokenInfo::constType::FLOATING_POINT));
+            tokens.emplace_back(fpVal, token::tokenInfo(constType::FLOATING_POINT));
             expectNewToken();
         }
     }
@@ -344,7 +344,7 @@ void tokenizer::processNumber() {
 }
 
 void tokenizer::processColon() {
-    sep(':');
+    sep(separatorType::COLON);
 }
 
 void tokenizer::processInvalidChar() {
@@ -356,24 +356,24 @@ void tokenizer::processInvalidChar() {
 }
 
 void tokenizer::processSmaller() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::SMALLER_THAN));
+    op(token::tokenInfo(binOpType::SMALLER_THAN));
 }
 
 void tokenizer::processEqual() {
     auto prevToken = tokens.back();
 
     switch(prevToken.getTokenInfo().bOpType){
-        case(token::tokenInfo::binOpType::SMALLER_THAN):
-            prevToken.setTokenInfo().bOpType = token::tokenInfo::binOpType::SMALLER_EQUAL_THAN;
+        case(binOpType::SMALLER_THAN):
+            prevToken.setTokenInfo().bOpType = binOpType::SMALLER_EQUAL_THAN;
             break;
-        case(token::tokenInfo::binOpType::BIGGER_THAN):
-            prevToken.setTokenInfo().bOpType = token::tokenInfo::binOpType::BIGGER_EQUAL_THAN;
+        case(binOpType::BIGGER_THAN):
+            prevToken.setTokenInfo().bOpType = binOpType::BIGGER_EQUAL_THAN;
             break;
-        case(token::tokenInfo::binOpType::ASSIGN):
-            prevToken.setTokenInfo().bOpType = token::tokenInfo::binOpType::EQUAL;
+        case(binOpType::ASSIGN):
+            prevToken.setTokenInfo().bOpType = binOpType::EQUAL;
             break;
-        case(token::tokenInfo::binOpType::UNKNOWN):
-            op(token::tokenInfo(token::tokenInfo::binOpType::ASSIGN));
+        case(binOpType::UNKNOWN):
+            op(token::tokenInfo(binOpType::ASSIGN));
             break;
         default:
             static const std::string msg = "[ERROR] Encountered unexpected operand, on line: ";
@@ -382,43 +382,43 @@ void tokenizer::processEqual() {
 }
 
 void tokenizer::processBigger() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::BIGGER_THAN));
+    op(token::tokenInfo(binOpType::BIGGER_THAN));
 }
 
 void tokenizer::processEmptyChar() {
     if (isNewToken)[[unlikely]]{
         isNewToken = false;
-        token temp { token::tokenInfo(token::tokenType::VAR) };
+        token temp { token::tokenInfo(tokenType::VAR) };
         temp.setIdentifier(file + curPos);
         tokens.emplace_back(temp);
     }
 }
 
 void tokenizer::processIndexOpen() {
-    sep('[');
-    separatorStack.push(']');
+    sep(separatorType::ANGLE_BRACKETS_OPEN);
+    separatorStack.push(separatorType::ANGLE_BRACKETS_CLOSED);
 }
 
 void tokenizer::processIndexClose() {
-    cSep(']');
+    cSep(separatorType::ANGLE_BRACKETS_CLOSED);
 }
 
 void tokenizer::processPow() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::POW));
+    op(token::tokenInfo(binOpType::POW));
 }
 
 void tokenizer::processOR() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::OR));
+    op(token::tokenInfo(binOpType::OR));
 }
 
 void tokenizer::processAND() {
-    op(token::tokenInfo(token::tokenInfo::binOpType::AND));
+    op(token::tokenInfo(binOpType::AND));
 }
 
 void tokenizer::processSemiColon() {
     if (!separatorStack.empty()) [[unlikely]]{
         static const std::string msg = "[ERROR] Not closed separator. Lack of: \"";
-        throw std::runtime_error(msg + separatorStack.top() + "\", on line: " + std::to_string(line) + '\n');
+        throw std::runtime_error(msg + separatorTypeSymbols[(size_t) separatorStack.top()] + "\", on line: " + std::to_string(line) + '\n');
     }
-    sep(';');
+    sep(separatorType::SEMI_COLON);
 }
