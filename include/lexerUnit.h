@@ -2,8 +2,8 @@
 // Created by Jlisowskyy on 17/08/2023.
 //
 
-#ifndef INTERPRETER_TOKENIZER_H
-#define INTERPRETER_TOKENIZER_H
+#ifndef INTERPRETER_LEXERUNIT_H
+#define INTERPRETER_LEXERUNIT_H
 
 #include "../include/globalValues.h"
 #include "../include/token.h"
@@ -11,7 +11,7 @@
 #include <stack>
 #include <unordered_map>
 
-class tokenizer{
+class lexerUnit{
     std::list<token> tokens {};
     std::stack<separatorType> separatorStack {};
     char* file { nullptr };
@@ -20,7 +20,7 @@ class tokenizer{
     size_t line { 1 };
     bool isNewToken { false };
 
-    using reactProc = void(tokenizer::*)();
+    using reactProc = void(lexerUnit::*)();
     // TODO: optimise gain possible: look for constexpr reacitonMap, keywordMap
     static const reactProc reactionMap[ASCII_SIZE];
     static const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> keyWordMap;
@@ -68,10 +68,10 @@ private:
     inline void processAND();
     inline void processSemiColon();
 public:
-    tokenizer(char* file, size_t size): file{ file }, fSize { size }{
+    lexerUnit(char* file, size_t size): file{file }, fSize {size }{
         tokens.emplace_back(token::tokenInfo(separatorType::SEMI_COLON));
     }
     std::list<token> breakToTokens();
 };
 
-#endif //INTERPRETER_TOKENIZER_H
+#endif //INTERPRETER_LEXERUNIT_H

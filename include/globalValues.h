@@ -134,7 +134,7 @@ enum class dataType {
     vector,
     integer,
     constChar,
-    voidType
+    voidType,
 };
 
 static const char* tTypeNames[] ={

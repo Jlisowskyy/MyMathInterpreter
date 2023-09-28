@@ -16,7 +16,7 @@
 
 class AST;
 class ASTNode;
-class ASTProducer;
+class InterpretingUnit;
 
 void printAST(ASTNode* head, int depth);
 
@@ -36,7 +36,7 @@ class ASTNode{
 
     friend void printAST(ASTNode* head, int depth);
     friend AST;
-    friend ASTProducer;
+    friend InterpretingUnit;
 
     ASTNode(binOpType Type):
         nType { nodeType::binaryOp }, bType { Type } {}

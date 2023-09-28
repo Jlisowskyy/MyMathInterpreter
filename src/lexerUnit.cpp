@@ -5,143 +5,143 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "../include/tokenizer.h"
+#include "../include/lexerUnit.h"
 #include "../include/errors.h"
 
-using rProc = void(tokenizer::*)();
+using rProc = void(lexerUnit::*)();
 
-const rProc tokenizer::reactionMap[ASCII_SIZE] {
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::processNewLine,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::Nothing,
-        &tokenizer::processSpace,
-        &tokenizer::processNegation,
-        &tokenizer::processConstChar,
-        &tokenizer::processComment,
-        &tokenizer::processInvalidChar, // $
-        &tokenizer::processModulo,
-        &tokenizer::processAND,
-        &tokenizer::processInvalidChar, // '
-        &tokenizer::processParenthesisOpened,
-        &tokenizer::processParenthesisClosed,
-        &tokenizer::processMult,
-        &tokenizer::processAdd,
-        &tokenizer::processComma,
-        &tokenizer::processSub,
-        &tokenizer::processDot,
-        &tokenizer::processDiv,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processNumber,
-        &tokenizer::processColon,
-        &tokenizer::processSemiColon, // ;
-        &tokenizer::processSmaller,
-        &tokenizer::processEqual,
-        &tokenizer::processBigger,
-        &tokenizer::processInvalidChar, // ?
-        &tokenizer::processInvalidChar, // @
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processIndexOpen,
-        &tokenizer::processInvalidChar, // "\"
-        &tokenizer::processIndexClose,
-        &tokenizer::processPow,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processInvalidChar, // `
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processEmptyChar,
-        &tokenizer::processInvalidChar, // {
-        &tokenizer::processOR,
-        &tokenizer::processInvalidChar, // }
-        &tokenizer::processInvalidChar, // ~
-        &tokenizer::Nothing
+const rProc lexerUnit::reactionMap[ASCII_SIZE] {
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::processNewLine,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::Nothing,
+        &lexerUnit::processSpace,
+        &lexerUnit::processNegation,
+        &lexerUnit::processConstChar,
+        &lexerUnit::processComment,
+        &lexerUnit::processInvalidChar, // $
+        &lexerUnit::processModulo,
+        &lexerUnit::processAND,
+        &lexerUnit::processInvalidChar, // '
+        &lexerUnit::processParenthesisOpened,
+        &lexerUnit::processParenthesisClosed,
+        &lexerUnit::processMult,
+        &lexerUnit::processAdd,
+        &lexerUnit::processComma,
+        &lexerUnit::processSub,
+        &lexerUnit::processDot,
+        &lexerUnit::processDiv,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processNumber,
+        &lexerUnit::processColon,
+        &lexerUnit::processSemiColon, // ;
+        &lexerUnit::processSmaller,
+        &lexerUnit::processEqual,
+        &lexerUnit::processBigger,
+        &lexerUnit::processInvalidChar, // ?
+        &lexerUnit::processInvalidChar, // @
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processIndexOpen,
+        &lexerUnit::processInvalidChar, // "\"
+        &lexerUnit::processIndexClose,
+        &lexerUnit::processPow,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processInvalidChar, // `
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processEmptyChar,
+        &lexerUnit::processInvalidChar, // {
+        &lexerUnit::processOR,
+        &lexerUnit::processInvalidChar, // }
+        &lexerUnit::processInvalidChar, // ~
+        &lexerUnit::Nothing
 };
 
-const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> tokenizer::keyWordMap{
+const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> lexerUnit::keyWordMap{
     std::make_pair("if", keywordType::IF),
     std::make_pair("elif", keywordType::ELIF),
     std::make_pair("else", keywordType::ELSE),
@@ -151,7 +151,7 @@ const std::unordered_map<const char*, keywordType, std::hash<const char*>, strin
     std::make_pair("end", keywordType::END),
 };
 
-void tokenizer::expectNewToken() {
+void lexerUnit::expectNewToken() {
     isNewToken = true;
 
     if (auto& prevToken = tokens.back(); prevToken.getTokenInfo().tType == tokenType::VAR){
@@ -170,7 +170,7 @@ void tokenizer::expectNewToken() {
     }
 }
 
-void tokenizer::cSep(separatorType type) {
+void lexerUnit::cSep(separatorType type) {
     tokens.emplace_back(token::tokenInfo(type));
 
     auto lastOpenedSep = separatorStack.top();
@@ -184,39 +184,39 @@ void tokenizer::cSep(separatorType type) {
     expectNewToken();
 }
 
-void tokenizer::sep(separatorType type) {
+void lexerUnit::sep(separatorType type) {
     tokens.emplace_back(token::tokenInfo(type));
     file[curPos] = '\0';
     expectNewToken();
 }
 
-inline void tokenizer::op(token::tokenInfo tInfo) {
+inline void lexerUnit::op(token::tokenInfo tInfo) {
     tokens.emplace_back(tInfo);
     file[curPos] = '\0';
     expectNewToken();
 }
 
-std::list<token> tokenizer::breakToTokens(){
+std::list<token> lexerUnit::breakToTokens(){
     for (curPos = 0; curPos < fSize; ++curPos){
-        void(tokenizer::*react)() = reactionMap[(unsigned char)file[curPos]];
+        void(lexerUnit::*react)() = reactionMap[(unsigned char)file[curPos]];
         (this->*react)();
     }
 
     return tokens;
 }
 
-void tokenizer::processNewLine(){
+void lexerUnit::processNewLine(){
     file[curPos] = '\0';
     ++line;
     expectNewToken();
 }
 
-void tokenizer::processSpace() {
+void lexerUnit::processSpace() {
     file[curPos] = '\0';
     expectNewToken();
 }
 
-void tokenizer::processComment() {
+void lexerUnit::processComment() {
     do{
         file[curPos++] = '\0';
     }while(curPos < fSize && !isEOL(file[curPos]));
@@ -224,7 +224,7 @@ void tokenizer::processComment() {
     expectNewToken();
 }
 
-void tokenizer::processConstChar() {
+void lexerUnit::processConstChar() {
     file[curPos++] = '\0';
     token temp {token::tokenInfo(constType::CONST_CHAR) };
     temp.setConstCharVal(file + curPos);
@@ -238,12 +238,12 @@ void tokenizer::processConstChar() {
     expectNewToken();
 }
 
-void tokenizer::processNegation() {
+void lexerUnit::processNegation() {
     op(token::tokenInfo(unaryOpType::LOGICAL_NEGATION));
 }
 
-void tokenizer::processParenthesisOpened() {
-    auto prevToken = tokens.back();
+void lexerUnit::processParenthesisOpened() {
+    auto& prevToken = tokens.back();
     if (prevToken.getTokenInfo().tType == tokenType::VAR){
         prevToken.setTokenInfo().tType = tokenType::PROC;
     }
@@ -252,23 +252,23 @@ void tokenizer::processParenthesisOpened() {
     separatorStack.push(separatorType::PARENTHESIS_CLOSED);
 }
 
-void tokenizer::processParenthesisClosed() {
+void lexerUnit::processParenthesisClosed() {
     cSep(separatorType::PARENTHESIS_CLOSED);
 }
 
-void tokenizer::processMult() {
+void lexerUnit::processMult() {
     op(token::tokenInfo(binOpType::MULT));
 }
 
-void tokenizer::processAdd() {
+void lexerUnit::processAdd() {
     op(token::tokenInfo(binOpType::ADD));
 }
 
-void tokenizer::processComma() {
+void lexerUnit::processComma() {
     sep(separatorType::COMMA);
 }
 
-void tokenizer::processSub() {
+void lexerUnit::processSub() {
     auto prevTokenType = tokens.back().getTokenInfo().tType;
 
     if (prevTokenType != tokenType::VAR
@@ -281,21 +281,21 @@ void tokenizer::processSub() {
     }
 }
 
-void tokenizer::processDiv() {
+void lexerUnit::processDiv() {
     op(token::tokenInfo(binOpType::DIVIDE));
 }
 
-void tokenizer::processModulo() {
+void lexerUnit::processModulo() {
     op(token::tokenInfo(binOpType::MOD));
 }
 
-void tokenizer::processDot() {
+void lexerUnit::processDot() {
     // for now:
     throw std::runtime_error("[ERROR] Dot character ('.') should only be used during literal values typing\nIn future use of classes");
 //    sep(".");
 }
 
-void tokenizer::processNumber() {
+void lexerUnit::processNumber() {
     abandonIfEmpty();
 
     if (!isNewToken) return;
@@ -314,7 +314,7 @@ void tokenizer::processNumber() {
         if (end != begin)
             // strtod return end == begin when error happened
         {
-            // curPos should indicate an already used character because of the main tokenizer loop
+            // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
             tokens.emplace_back(intVal, token::tokenInfo(constType::INTEGER));
@@ -329,7 +329,7 @@ void tokenizer::processNumber() {
                 throw std::runtime_error(msg + std::to_string(line ) + '\n');
             }
 
-            // curPos should indicate an already used character because of the main tokenizer loop
+            // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
             tokens.emplace_back(fpVal, token::tokenInfo(constType::FLOATING_POINT));
@@ -343,11 +343,11 @@ void tokenizer::processNumber() {
 
 }
 
-void tokenizer::processColon() {
+void lexerUnit::processColon() {
     sep(separatorType::COLON);
 }
 
-void tokenizer::processInvalidChar() {
+void lexerUnit::processInvalidChar() {
     static const std::string msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use is prohibited!\n";
     const std::string whatChar = std::string("Char: ") + file[curPos] + '\n';
     const std::string position = std::string ("On line: ") + std::to_string(line) + '\n';
@@ -355,11 +355,11 @@ void tokenizer::processInvalidChar() {
     throw std::runtime_error(msg + whatChar + position);
 }
 
-void tokenizer::processSmaller() {
+void lexerUnit::processSmaller() {
     op(token::tokenInfo(binOpType::SMALLER_THAN));
 }
 
-void tokenizer::processEqual() {
+void lexerUnit::processEqual() {
     auto prevToken = tokens.back();
 
     switch(prevToken.getTokenInfo().bOpType){
@@ -381,11 +381,11 @@ void tokenizer::processEqual() {
     }
 }
 
-void tokenizer::processBigger() {
+void lexerUnit::processBigger() {
     op(token::tokenInfo(binOpType::BIGGER_THAN));
 }
 
-void tokenizer::processEmptyChar() {
+void lexerUnit::processEmptyChar() {
     if (isNewToken)[[unlikely]]{
         isNewToken = false;
         token temp { token::tokenInfo(tokenType::VAR) };
@@ -394,28 +394,28 @@ void tokenizer::processEmptyChar() {
     }
 }
 
-void tokenizer::processIndexOpen() {
+void lexerUnit::processIndexOpen() {
     sep(separatorType::ANGLE_BRACKETS_OPEN);
     separatorStack.push(separatorType::ANGLE_BRACKETS_CLOSED);
 }
 
-void tokenizer::processIndexClose() {
+void lexerUnit::processIndexClose() {
     cSep(separatorType::ANGLE_BRACKETS_CLOSED);
 }
 
-void tokenizer::processPow() {
+void lexerUnit::processPow() {
     op(token::tokenInfo(binOpType::POW));
 }
 
-void tokenizer::processOR() {
+void lexerUnit::processOR() {
     op(token::tokenInfo(binOpType::OR));
 }
 
-void tokenizer::processAND() {
+void lexerUnit::processAND() {
     op(token::tokenInfo(binOpType::AND));
 }
 
-void tokenizer::processSemiColon() {
+void lexerUnit::processSemiColon() {
     if (!separatorStack.empty()) [[unlikely]]{
         static const std::string msg = "[ERROR] Not closed separator. Lack of: \"";
         throw std::runtime_error(msg + separatorTypeSymbols[(size_t) separatorStack.top()] + "\", on line: " + std::to_string(line) + '\n');

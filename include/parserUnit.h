@@ -8,7 +8,7 @@
 #include <list>
 
 #include "globalValues.h"
-#include "../include/tokenizer.h"
+#include "../include/lexerUnit.h"
 
 class parserUnit{
     // Logging simple messages and occurred problems
@@ -41,11 +41,12 @@ public:
     }
 #endif
 private:
-    std::list<token> getFirstStageTokens(size_t fSize);
+    std::list<token> getLexTokens(size_t fSize);
 
 public:
-    std::list<token> processFile(const char*);
-    std::list<token> processCin();
+    // TODO: possibly in future will return ast trees or something
+    void processFile(const char* filename);
+    void processCin();
 };
 
 std::string getTodayDate(bool);

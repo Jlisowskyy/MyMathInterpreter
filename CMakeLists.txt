@@ -12,13 +12,14 @@ add_executable(Interpreter
         include/token.h
         src/token.cpp
         include/errors.h
-        include/tokenizer.h
-        src/tokenizer.cpp
-        include/ASTProducer.h
-        src/ASTProducer.cpp
+        include/lexerUnit.h
+        src/lexerUnit.cpp
+        include/InterpretingUnit.h
+        src/InterpretingUnit.cpp
         include/AST.h
         include/operatorsProc.h
         src/AST.cpp
-        src/operatorsProc.cpp)
+        src/operatorsProc.cpp
+        include/StdBasedHashTable.hpp)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;-O3;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;)

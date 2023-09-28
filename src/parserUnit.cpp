@@ -11,6 +11,7 @@
 
 #include "../include/parserUnit.h"
 #include "../include/errors.h"
+#include "../include/InterpretingUnit.h"
 
 std::string getTodayDate(bool displaySeconds = false) {
     std::stringstream stream(std::ios::out);
@@ -163,10 +164,10 @@ size_t parserUnit::loadReadFile(std::ifstream& fstr) {
     return fSize;
 }
 
-std::list<token> parserUnit::getFirstStageTokens(size_t fSize) {
+std::list<token> parserUnit::getLexTokens(size_t fSize) {
     std::list<token> tokenList;
 
-    tokenizer tkn(fileContent, fSize);
+    lexerUnit tkn(fileContent, fSize);
     tokenList = tkn.breakToTokens();
 
     if (saveLogToFile){
@@ -183,16 +184,19 @@ std::list<token> parserUnit::getFirstStageTokens(size_t fSize) {
     return tokenList;
 }
 
-std::list<token> parserUnit::processFile(const char* src) {
+void parserUnit::processFile(const char* filename) {
     std::list<token> tokenList;
 
     try{
         std::ifstream ftp;
         size_t fSize;
 
-        openReadFile(ftp, src);
+        openReadFile(ftp, filename);
         fSize = loadReadFile(ftp);
-        tokenList = getFirstStageTokens(fSize);
+        tokenList = getLexTokens(fSize);
+
+        InterpretingUnit interpreter(std::move(tokenList));
+        interpreter.lineDispatcher();
     }
     catch(const std::exception& err){
         std::cerr << err.what();
@@ -203,11 +207,10 @@ std::list<token> parserUnit::processFile(const char* src) {
 
         exit(1);
     }
-    return tokenList;
 }
 
-std::list<token> parserUnit::processCin() {
-    return {};
+void parserUnit::processCin() {
+    return;
 }
 
 void parserUnit::EnableSaveToFile() {

@@ -8,8 +8,10 @@
 #include "globalValues.h"
 
 struct dataPack{
-    void* dataPtr { nullptr };
-    dataType dType { dataType::floatingPoint };
+    void* dataPtr;
+    dataType dType;
+    dataPack():
+        dataPtr{ nullptr }, dType{ dataType::voidType } {}
 };
 
 void printDataPack(dataPack& x);

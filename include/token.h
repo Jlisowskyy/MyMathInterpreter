@@ -12,6 +12,7 @@
 class token{
 public:
     struct tokenInfo{
+        // TODO: CONSIDER UNION HERE!!!
         tokenType tType { tokenType::UNKNOWN };
         binOpType bOpType { binOpType::UNKNOWN };
         unaryOpType uOpType { unaryOpType::UNKNOWN };
