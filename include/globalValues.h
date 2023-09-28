@@ -86,13 +86,6 @@ enum class separatorType{
     UNKNOWN,
 };
 
-enum class constType{
-    FLOATING_POINT,
-    INTEGER,
-    CONST_CHAR,
-    UNKNOWN
-};
-
 enum class keywordType{
     IF,
     ENDIF,

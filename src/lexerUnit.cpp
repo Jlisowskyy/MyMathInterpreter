@@ -226,7 +226,7 @@ void lexerUnit::processComment() {
 
 void lexerUnit::processConstChar() {
     file[curPos++] = '\0';
-    token temp {token::tokenInfo(constType::CONST_CHAR) };
+    token temp {token::tokenInfo(dataType::constChar) };
     temp.setConstCharVal(file + curPos);
     tokens.push_back(temp);
 
@@ -317,7 +317,7 @@ void lexerUnit::processNumber() {
             // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(intVal, token::tokenInfo(constType::INTEGER));
+            tokens.emplace_back(intVal, token::tokenInfo(dataType::integer));
             expectNewToken();
         }
         else{
@@ -332,7 +332,7 @@ void lexerUnit::processNumber() {
             // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(fpVal, token::tokenInfo(constType::FLOATING_POINT));
+            tokens.emplace_back(fpVal, token::tokenInfo(dataType::floatingPoint));
             expectNewToken();
         }
     }

@@ -17,7 +17,7 @@ public:
         binOpType bOpType { binOpType::UNKNOWN };
         unaryOpType uOpType { unaryOpType::UNKNOWN };
         keywordType kWordType{ keywordType::UNKNOWN };
-        constType cType { constType::UNKNOWN };
+        dataType cType{ dataType::voidType };
         separatorType sType { separatorType::UNKNOWN };
         // FUNC PTR
 
@@ -31,7 +31,7 @@ public:
         explicit tokenInfo(keywordType Type):
             tType{ tokenType::KEYWORD }, kWordType{ Type } {}
 
-        explicit tokenInfo(constType Type):
+        explicit tokenInfo(dataType Type):
             tType{ tokenType::CONST }, cType{ Type } {}
 
         explicit tokenInfo(separatorType Type):

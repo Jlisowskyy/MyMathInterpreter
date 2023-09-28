@@ -16,4 +16,5 @@
 #    print("Goodbye World!\n");
 #end
 
-#var2 = 5 * 4 + 7 * 3;
+var2 = 5 * (1 + 2);
+print(var2);

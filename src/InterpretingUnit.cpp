@@ -99,13 +99,13 @@ void InterpretingUnit::processVar() {
     if (tokenStream.front().getTokenInfo().bOpType == binOpType::ASSIGN) {
         processAssignment();
     } else {
-        processExpression();
+        processNumExpression();
     }
 }
 
 void InterpretingUnit::processConst() {
     switch (actualToken.getTokenInfo().cType) {
-        case constType::CONST_CHAR: [[unlikely]]
+        case dataType::constChar: [[unlikely]]
 
             getNextToken();
             if (actualToken.getTokenInfo().sType != separatorType::SEMI_COLON)[[unlikely]]{
@@ -113,11 +113,12 @@ void InterpretingUnit::processConst() {
             }
 
             break;
-        case constType::UNKNOWN: [[unlikely]]
+        case dataType::voidType: [[unlikely]]
             error("UNKNOWN const type-appeared: lexer bug encountered'\n");
             break;
-        default: [[likely]]
-            processExpression();
+        default:
+            [[likely]]
+                    processNumExpression();
             break;
     }
 }
@@ -126,16 +127,24 @@ void InterpretingUnit::processConst() {
 // Grammatical structures procedures
 // -------------------------------------------
 
-void InterpretingUnit::processExpression() {
+void InterpretingUnit::processNumExpression() {
 
 }
 
-dataPack InterpretingUnit::evalExpression() {
+dataPack InterpretingUnit::evalNumExpression() {
+    while(actualToken.getTokenInfo().sType != separatorType::SEMI_COLON){
+        dataPack lOperand;
+
+
+    }
+}
+
+void InterpretingUnit::processNumSubExpressionInParenthesis() {
+
+}
+
+dataPack InterpretingUnit::evalNumSubExpressionInParenthesis() {
     return dataPack();
-}
-
-void InterpretingUnit::processSubExpressionInParenthesis() {
-
 }
 
 void InterpretingUnit::processAssignment()
@@ -143,7 +152,7 @@ void InterpretingUnit::processAssignment()
     auto identifier { actualToken.getIdentifier() };
     getNextToken(); // Consumes '=' token
     getNextToken();
-    auto result = evalExpression();
+    auto result = evalNumExpression();
     mm.addDPack(identifier, result);
 }
 
@@ -199,16 +208,16 @@ void InterpretingUnit::printToken(token x) {
         case tokenType::CONST:
 
             switch (x.getTokenInfo().cType) {
-                case constType::FLOATING_POINT:
+                case dataType::floatingPoint:
                     std::cout << x.getFpVal();
                     break;
-                case constType::INTEGER:
+                case dataType::integer:
                     std::cout << x.getIntVal();
                     break;
-                case constType::CONST_CHAR:
+                case dataType::constChar:
                     std::cout << x.getConstCharVal();
                     break;
-                case constType::UNKNOWN:
+                case dataType::voidType: [[unlikely]]
                     error("Passed UNKNOWN const type\n");
                     break;
             }

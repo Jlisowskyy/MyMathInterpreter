@@ -40,9 +40,10 @@ class InterpretingUnit{
 
     // Grammatical structuctures procedures
     inline void processProcInvocAsFirstToken();
-    void processExpression();
-    dataPack evalExpression();
-    void processSubExpressionInParenthesis();
+    void processNumExpression();
+    dataPack evalNumExpression();
+    void processNumSubExpressionInParenthesis();
+    dataPack evalNumSubExpressionInParenthesis();
     inline void processAssignment();
 
 

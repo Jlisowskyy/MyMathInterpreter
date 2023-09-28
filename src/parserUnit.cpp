@@ -69,11 +69,11 @@ void writeListOut(std::ofstream &dst, std::list<token> &list){
                 dst << unaryOpTypeNames[(size_t)(x.getTokenInfo().uOpType)];
                 break;
             case tokenType::CONST:
-                if (tInfo.cType == constType::FLOATING_POINT)
+                if (tInfo.cType == dataType::floatingPoint)
                     dst << x.getFpVal();
-                else if (tInfo.cType == constType::INTEGER)
+                else if (tInfo.cType == dataType::integer)
                     dst << x.getIntVal();
-                else if (tInfo.cType == constType::CONST_CHAR)
+                else if (tInfo.cType == dataType::constChar)
                     dst << x.getConstCharVal();
                 else
                     dst << "[ERROR]";
