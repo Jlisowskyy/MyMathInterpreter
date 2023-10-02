@@ -10,7 +10,7 @@
 
 #include "token.h"
 #include "AST.h"
-#include "StdBasedHashTable.hpp"
+#include "StdBasedHashTable.h"
 
 // -------------
 // Insert your hashtable class here:
@@ -41,7 +41,12 @@ class InterpretingUnit{
     // Grammatical structuctures procedures
     inline void processProcInvocAsFirstToken();
     void processNumExpression();
-    dataPack evalNumExpression();
+
+    // interpreter action methods
+    dataPack loadExpressionArgument();
+
+    // TODO: test template here
+    dataPack evalNumExpression(separatorType terminationSign);
     void processNumSubExpressionInParenthesis();
     dataPack evalNumSubExpressionInParenthesis();
     inline void processAssignment();

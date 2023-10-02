@@ -9,34 +9,69 @@
 #include "token.h"
 
 struct dataPack{
-    bool isConst = false;
-    void* dataPtr;
+    union{
+        void* dynamicDataPtr;
+        const char* constChar;
+        FloatingPointType fpVal;
+        IntegerType intVal;
+    } dUnion;
     dataType dType;
+    explicit dataPack(void* dataPtr = nullptr, dataType type = dataType::voidType);
+    explicit dataPack(const char* constChar);
+    explicit dataPack(IntegerType val);
+    explicit dataPack(FloatingPointType val);
+    explicit dataPack(MatrixType& val);
+    explicit dataPack(VectorType& val);
+};
 
-    dataPack():
-        dataPtr{ nullptr }, dType{ dataType::voidType } {}
+dataPack getDPack(token x);
+void printDataPack(dataPack& x);
 
-    dataPack(void* dataPtr, dataType type, bool isConst = false):
-        dataPtr{ dataPtr }, dType{ type } {}
+// ------------------------------
+// operator templates
+// ------------------------------
 
-    ~dataPack(){
+template<
+        typename NumTypeLeft,
+        typename NumTypeRight
+        >
+struct operADD{
+    auto operator()(NumTypeLeft& lOp, NumTypeRight& rOp) const{
+        return lOp + rOp;
     }
 };
 
-dataPack getDPack(token x){
-    switch (x.getTokenInfo().cType) {
-        case dataType::floatingPoint:
-            return dataPack{ new FloatingPointType{ x.getFpVal() }, dataType::floatingPoint, true };
-        case dataType::integer:
-            return dataPack{ new IntegerType{ x.getIntVal() }, dataType::integer, true };
-        case dataType::constChar:
-            return dataPack{ new const char* { x.getConstCharVal() }, dataType::constChar, true };
-        default: [[unlikely]]
-            throw std::runtime_error("[ERROR] Encountered illegal literal usage\n");
+template<
+        typename NumTypeLeft,
+        typename NumTypeRight
+        >
+struct operMUL{
+    auto operator()(NumTypeLeft& lOp, NumTypeRight& rOp) const{
+        return lOp * rOp;
     }
-}
+};
 
-void printDataPack(dataPack& x);
+// ------------------------------------
+// processing opeartors templates
+// ------------------------------------
+
+template<
+        typename numType, // expected one from dataType enum class
+        template< typename, typename> typename operatorClass
+        >
+dataPack processOperatorRType(numType& lOperand, dataPack rOperand);
+
+template<
+        template<typename, typename> typename operatorClass
+        >
+dataPack processOperator(dataPack lOperand, dataPack rOperand);
+
+inline static constexpr dataPack (*processADD)(dataPack, dataPack) = &processOperator<operADD>;
+inline static constexpr dataPack (*processMUL)(dataPack, dataPack) = &processOperator<operMUL>;
+
+// ------------------------------
+// operator packs
+// ------------------------------
 
 struct binPack{
     binOpType type;
@@ -51,5 +86,57 @@ struct unaryPack{
 
 dataPack processBinaryOperand(binPack x);
 dataPack processUnaryOperand(unaryPack x);
+
+// ---------------------------------------------------
+// processing opeartors templates implementation
+// ---------------------------------------------------
+
+template<
+        typename numType, // expected one from dataType enum class
+        template< typename, typename> typename operatorClass
+        >
+dataPack processOperatorRType(numType& lOperand, dataPack rOperand){
+    static const operatorClass<numType, FloatingPointType> fpOper;
+    static const operatorClass<numType, IntegerType> intOper;
+    static const operatorClass<numType, MatrixType> matOper;
+    static const operatorClass<numType, VectorType> vectOper;
+    static const operatorClass<numType, const char*> charOper;
+
+    switch (rOperand.dType) {
+        case dataType::floatingPoint:
+            return dataPack{ fpOper(lOperand, rOperand.dUnion.fpVal) };
+        case dataType::matrix:
+            return dataPack{ matOper(lOperand, *static_cast<MatrixType*>(rOperand.dUnion.dynamicDataPtr)) };
+        case dataType::vector:
+            return dataPack{ vectOper(lOperand, *static_cast<VectorType*>(rOperand.dUnion.dynamicDataPtr)) };
+        case dataType::integer:
+            return dataPack{ intOper(lOperand, rOperand.dUnion.intVal) };
+        case dataType::constChar:
+            throw std::runtime_error("[ERROR] Character operations not done yey\n");
+        case dataType::voidType:
+            throw std::runtime_error("[ERROR] Void type is not acceptable inside expression\n");
+    }
+}
+
+template<
+        template<typename, typename> typename operatorClass
+        >
+dataPack processOperator(dataPack lOperand, dataPack rOperand){
+    switch (lOperand.dType) {
+
+        case dataType::floatingPoint:
+            return processOperatorRType<FloatingPointType, operatorClass>(lOperand.dUnion.fpVal, rOperand);
+        case dataType::matrix:
+            return processOperatorRType<MatrixType , operatorClass>(*static_cast<MatrixType*>(lOperand.dUnion.dynamicDataPtr), rOperand);
+        case dataType::vector:
+            return processOperatorRType<VectorType , operatorClass>(*static_cast<VectorType*>(lOperand.dUnion.dynamicDataPtr), rOperand);
+        case dataType::integer:
+            return processOperatorRType<IntegerType , operatorClass>(lOperand.dUnion.intVal, rOperand);
+        case dataType::constChar:
+            throw std::runtime_error("[ERROR] Character operations not done yey\n");
+        case dataType::voidType:
+            throw std::runtime_error("[ERROR] Void type is not acceptable inside expression\n");
+    }
+}
 
 #endif //INTERPRETER_OPERATORSPROC_H

@@ -20,6 +20,6 @@ add_executable(Interpreter
         include/operatorsProc.h
         src/AST.cpp
         src/operatorsProc.cpp
-        include/StdBasedHashTable.hpp)
+        include/StdBasedHashTable.h)
 
 target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;)

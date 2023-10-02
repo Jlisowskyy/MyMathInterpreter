@@ -131,12 +131,47 @@ void InterpretingUnit::processNumExpression() {
 
 }
 
-dataPack InterpretingUnit::evalNumExpression() {
-    while(actualToken.getTokenInfo().sType != separatorType::SEMI_COLON){
-        dataPack lOperand;
+dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
+    dataPack lBuffer, rBuffer;
+    lBuffer = loadExpressionArgument();
+    getNextToken();
 
+    while(true){
+        if (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
+            while (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
+                getNextToken();
+                rBuffer = loadExpressionArgument();
+                lBuffer = processMULTOperator(lBuffer, rBuffer);
+            }
+        } else if (actualToken.getTokenInfo().bOpType == binOpType::ADD) {
+            getNextToken();
 
+            if (auto x = actualToken.getTokenInfo(); x.bOpType == binOpType::ADD || x.sType ==  separatorType::SEMI_COLON){
+                rBuffer = loadExpressionArgument();
+            }
+            else if (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
+                dataPack tempBuff = loadExpressionArgument();
+                while (actualToken.getTokenInfo().bOpType == binOpType::MULT){
+                    getNextToken();
+                    rBuffer = loadExpressionArgument();
+                    tempBuff = processMULTOperator(tempBuff, rBuffer);
+                }
+                rBuffer = tempBuff;
+            }
+            else{
+                error("Invalid expression syntax encountered");
+            }
+
+            lBuffer = processADDOperator(lBuffer, rBuffer);
+        } else if (actualToken.getTokenInfo().sType == separatorType::SEMI_COLON)
+            break;
+        else {
+            error("Invalid expression syntax encountered\n");
+        }
+        getNextToken();
     }
+
+    return lBuffer;
 }
 
 void InterpretingUnit::processNumSubExpressionInParenthesis() {
@@ -152,7 +187,7 @@ void InterpretingUnit::processAssignment()
     auto identifier { actualToken.getIdentifier() };
     getNextToken(); // Consumes '=' token
     getNextToken();
-    auto result = evalNumExpression();
+    auto result = evalNumExpression(separatorType::COLON);
     mm.addDPack(identifier, result);
 }
 
@@ -186,19 +221,19 @@ void InterpretingUnit::printToken(token x) {
             var = mm.getDPack(x.getIdentifier());
             switch (var.dType) {
                 case dataType::floatingPoint:
-                    std::cout << *(static_cast<FloatingPointType*>(var.dataPtr));
+                    std::cout << var.dUnion.fpVal;
                     break;
                 case dataType::matrix:
-                    std::cout << *(static_cast<MatrixType*>(var.dataPtr));
+                    std::cout << *(static_cast<MatrixType*>(var.dUnion.dynamicDataPtr));
                     break;
                 case dataType::vector:
-                    std::cout << *(static_cast<VectorType*>(var.dataPtr));
+                    std::cout << *(static_cast<VectorType*>(var.dUnion.dynamicDataPtr));
                     break;
                 case dataType::integer:
-                    std::cout << *(static_cast<IntegerType*>(var.dataPtr));
+                    std::cout << var.dUnion.intVal;
                     break;
                 case dataType::constChar:
-                    std::cout << (static_cast<const char*>(var.dataPtr));
+                    std::cout << var.dUnion.constChar;
                     break;
                 case dataType::voidType: [[unlikely]]
                     error("Void data type is not printable\n");
@@ -225,6 +260,24 @@ void InterpretingUnit::printToken(token x) {
             break;
         default: [[unlikely]]
                     error("Invalid debug print argument\n");
+    }
+}
+
+dataPack InterpretingUnit::loadExpressionArgument() {
+    if (actualToken.getTokenInfo().sType == separatorType::PARENTHESIS_OPEN){
+        getNextToken();
+        return evalNumExpression(separatorType::PARENTHESIS_CLOSED);
+        getNextToken();
+    }
+    else if (actualToken.getTokenInfo().tType == tokenType::VAR){
+        return mm.getDPack(actualToken.getIdentifier());
+    }
+    else if (actualToken.getTokenInfo().tType == tokenType::CONST){
+        return getDPack(actualToken);
+    }
+    else{
+        // TODO: BETTER CONTEXT ERROR HERE
+        error("Invalid expression syntax encountered\n");
     }
 }
 

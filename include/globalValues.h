@@ -18,7 +18,7 @@ constexpr const char* parserLogsDestDefault { R"(C:\Users\Jlisowskyy\Desktop\Pro
 
 using FloatingPointType = double;
 using IntegerType = long long int;
-using VectorType = int; // TODO
+using VectorType = char; // TODO
 using MatrixType = int; // TODO
 
 constexpr char commentChar { '#' };
@@ -129,6 +129,8 @@ enum class dataType {
     constChar,
     voidType,
 };
+
+// TODO: ARRAYS
 
 static const char* tTypeNames[] ={
         "VAR",

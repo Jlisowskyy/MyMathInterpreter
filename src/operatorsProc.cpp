@@ -37,3 +37,51 @@ dataPack processBinaryOperand(binPack x) {
 dataPack processUnaryOperand(unaryPack x) {
     return x.Arg;
 }
+
+dataPack getDPack(token x) {
+    switch (x.getTokenInfo().cType) {
+        case dataType::floatingPoint:
+            return dataPack{ x.getFpVal() };
+        case dataType::integer:
+            return dataPack{ x.getIntVal() };
+        case dataType::constChar:
+            return dataPack{ x.getConstCharVal() };
+        default: [[unlikely]]
+                    throw std::runtime_error("[ERROR] Encountered illegal literal usage\n");
+    }
+}
+
+dataPack::dataPack(void *dataPtr, dataType type) :
+        dUnion{ dataPtr }, dType{ type } {}
+
+dataPack::dataPack(const char *constChar) :
+        dataPack{}
+{
+    dUnion.constChar = constChar;
+    dType = dataType::constChar;
+}
+
+dataPack::dataPack(IntegerType val) :
+        dataPack{}
+{
+    dUnion.intVal = val;
+    dType = dataType::integer;
+}
+
+dataPack::dataPack(FloatingPointType val) :
+        dataPack{}
+{
+    dUnion.fpVal = val;
+    dType = dataType::floatingPoint;
+}
+
+dataPack::dataPack(MatrixType &val) {
+    // TODO: ADD HERE SUPERVISED ALLOCATION
+    dUnion.dynamicDataPtr = nullptr;
+    dType = dataType::matrix;
+}
+
+dataPack::dataPack(VectorType &val) {
+    dUnion.dynamicDataPtr = nullptr;
+    dType = dataType::vector;
+}

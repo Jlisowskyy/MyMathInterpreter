@@ -10,3 +10,5 @@ cmake-build-release/
 *.exe
 DebugLogs/
 Logs/
+.vscode/
+build/
