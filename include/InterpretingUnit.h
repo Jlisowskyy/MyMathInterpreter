@@ -18,7 +18,7 @@
 //--------------
 
 class InterpretingUnit{
-    std::list<token> tokenStream;
+    std::list<token>& tokenStream;
     std::stack<ASTNode*> nodesStack;
     std::list<AST> executionPath;
     ASTNode* currentTree { nullptr };
@@ -38,7 +38,7 @@ class InterpretingUnit{
      *
      */
 
-    // Grammatical structuctures procedures
+    // Grammatical structures procedures
     inline void processProcInvocAsFirstToken();
     void processNumExpression();
 
@@ -60,10 +60,8 @@ class InterpretingUnit{
     inline void processConst();
 
 public:
-    InterpretingUnit(std::list<token>&& tokens);
-
+    InterpretingUnit(std::list<token>& tokens);
     AST lineDispatcher();
-
 
 #ifdef DEBUG_
     // temporary printing tool

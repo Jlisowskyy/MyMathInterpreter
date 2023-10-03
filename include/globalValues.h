@@ -8,18 +8,19 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <complex>
 
 #define DEBUG_
 
 // TODO: CHECK FOR BETTER ORDER OF TOKENS TYPES
 
-constexpr const char* parserDebugDestDefault { R"(C:/Users/Jlisowskyy\Desktop\Projekty\Interpreter\DebugLogs\)" };
-constexpr const char* parserLogsDestDefault { R"(C:\Users\Jlisowskyy\Desktop\Projekty\Interpreter\Logs\)" };
+constexpr const char* parserDebugDestDefault { R"(DebugLogs/)" };
+constexpr const char* parserLogsDestDefault { R"(Logs/)" };
 
 using FloatingPointType = double;
 using IntegerType = long long int;
 using VectorType = char; // TODO
-using MatrixType = int; // TODO
+using MatrixType = float; // TODO
 
 constexpr char commentChar { '#' };
 constexpr char EOL { '\n' };

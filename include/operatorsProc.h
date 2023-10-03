@@ -20,8 +20,8 @@ struct dataPack{
     explicit dataPack(const char* constChar);
     explicit dataPack(IntegerType val);
     explicit dataPack(FloatingPointType val);
-    explicit dataPack(MatrixType& val);
-    explicit dataPack(VectorType& val);
+    explicit dataPack(MatrixType val);
+    explicit dataPack(VectorType val);
 };
 
 dataPack getDPack(token x);
@@ -45,9 +45,29 @@ template<
         typename NumTypeLeft,
         typename NumTypeRight
         >
+struct operSUB{
+    auto operator()(NumTypeLeft& lOp, NumTypeRight& rOp) const{
+        return lOp - rOp;
+    }
+};
+
+template<
+        typename NumTypeLeft,
+        typename NumTypeRight
+        >
 struct operMUL{
     auto operator()(NumTypeLeft& lOp, NumTypeRight& rOp) const{
         return lOp * rOp;
+    }
+};
+
+template<
+        typename NumTypeLeft,
+        typename NumTypeRight
+        >
+struct operDIV{
+    auto operator()(NumTypeLeft& lOp, NumTypeRight& rOp) const{
+        return lOp / rOp;
     }
 };
 
@@ -66,8 +86,10 @@ template<
         >
 dataPack processOperator(dataPack lOperand, dataPack rOperand);
 
-inline static constexpr dataPack (*processADD)(dataPack, dataPack) = &processOperator<operADD>;
-inline static constexpr dataPack (*processMUL)(dataPack, dataPack) = &processOperator<operMUL>;
+inline static constexpr dataPack (*processADD)(dataPack, dataPack) { &processOperator<operADD> };
+inline static constexpr dataPack (*processSUB)(dataPack, dataPack) { &processOperator<operSUB> };
+inline static constexpr dataPack (*processMUL)(dataPack, dataPack) { &processOperator<operMUL> };
+inline static constexpr dataPack (*processDIV)(dataPack, dataPack) { &processOperator<operDIV> };
 
 // ------------------------------
 // operator packs
@@ -104,15 +126,15 @@ dataPack processOperatorRType(numType& lOperand, dataPack rOperand){
 
     switch (rOperand.dType) {
         case dataType::floatingPoint:
-            return dataPack{ fpOper(lOperand, rOperand.dUnion.fpVal) };
+            return dataPack{ (double)fpOper(lOperand, rOperand.dUnion.fpVal) };
         case dataType::matrix:
-            return dataPack{ matOper(lOperand, *static_cast<MatrixType*>(rOperand.dUnion.dynamicDataPtr)) };
+            return dataPack{ (double)matOper(lOperand, *(static_cast<MatrixType*>(rOperand.dUnion.dynamicDataPtr))) };
         case dataType::vector:
-            return dataPack{ vectOper(lOperand, *static_cast<VectorType*>(rOperand.dUnion.dynamicDataPtr)) };
+            return dataPack{ (double)vectOper(lOperand, *(static_cast<VectorType*>(rOperand.dUnion.dynamicDataPtr))) };
         case dataType::integer:
-            return dataPack{ intOper(lOperand, rOperand.dUnion.intVal) };
+            return dataPack{ (double)intOper(lOperand, rOperand.dUnion.intVal) };
         case dataType::constChar:
-            throw std::runtime_error("[ERROR] Character operations not done yey\n");
+            throw std::runtime_error("[ERROR] Character operations not done yet\n");
         case dataType::voidType:
             throw std::runtime_error("[ERROR] Void type is not acceptable inside expression\n");
     }

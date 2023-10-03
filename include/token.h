@@ -19,7 +19,6 @@ public:
         keywordType kWordType{ keywordType::UNKNOWN };
         dataType cType{ dataType::voidType };
         separatorType sType { separatorType::UNKNOWN };
-        // FUNC PTR
 
         explicit tokenInfo() = default;
         explicit tokenInfo(binOpType Type):
@@ -46,11 +45,13 @@ private:
     const char* constCharVal { nullptr };
     FloatingPointType fpVal { FloatingPointType{} };
     IntegerType inVal { IntegerType{} };
+
 public:
+    size_t line{}; // Used in debugging to find correct line inside file
     explicit token(): tInfo{} {}
-    explicit token(tokenInfo info): tInfo{ info } {}
-    explicit token(FloatingPointType val, tokenInfo info): tInfo{ info }, fpVal{ val }{}
-    explicit token(IntegerType val, tokenInfo info): tInfo{ info }, inVal{ val }{}
+    explicit token(tokenInfo info, size_t line): tInfo{ info }, line{ line }{}
+    explicit token(FloatingPointType val, tokenInfo info, size_t line): tInfo{ info }, fpVal{ val }, line{ line }{}
+    explicit token(IntegerType val, tokenInfo info, size_t line): tInfo{ info }, inVal{ val }, line{ line }{}
 
     // Used mainly in debugging options
     inline const char* getIdentifier() const { return identifier; }

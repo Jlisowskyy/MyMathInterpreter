@@ -7,7 +7,7 @@
 // Class structural methods and helping methods
 // -------------------------------------------
 
-InterpretingUnit::InterpretingUnit(std::list<token> &&tokens) :
+InterpretingUnit::InterpretingUnit(std::list<token> &tokens) :
         tokenStream{ tokens }{
     if (tokenStream.empty()) [[unlikely]]{
         throw std::runtime_error("[ERROR] Illegal empty token list passed to parser\n");
@@ -33,34 +33,41 @@ void InterpretingUnit::error(std::string errorMsg) {
 // -------------------------------------------
 
 AST InterpretingUnit::lineDispatcher() {
-    while(!tokenStream.empty()){
-        getNextToken();
-        switch(auto& tInfo = actualToken.getTokenInfo(); tInfo.tType){
-            case tokenType::VAR:
-                processVar();
-                break;
-            case tokenType::SEPARATOR:
-                processSeparator();
-                break;
-            case tokenType::PROC:
-                processProcInvocAsFirstToken();
-                break;
-            case tokenType::BIN_OP:
-                error("Invalid use of binary operator: missing left operand\n");
-                break;
-            case tokenType::KEYWORD:
-                processKeyword();
-                break;
-            case tokenType::UN_OP:
-                processUnOperator();
-                break;
-            case tokenType::CONST:
-                processConst();
-                break;
-            case tokenType::UNKNOWN: [[unlikely]]
-                error("InterpretingUnit received UNKNOWN token\n");
-                break;
+
+    try{
+        while (!tokenStream.empty()) {
+            getNextToken();
+            switch (auto &tInfo = actualToken.getTokenInfo(); tInfo.tType) {
+                case tokenType::VAR:
+                    processVar();
+                    break;
+                case tokenType::SEPARATOR:
+                    processSeparator();
+                    break;
+                case tokenType::PROC:
+                    processProcInvocAsFirstToken();
+                    break;
+                case tokenType::BIN_OP:
+                    error("Invalid use of binary operator: missing left operand\n");
+                    break;
+                case tokenType::KEYWORD:
+                    processKeyword();
+                    break;
+                case tokenType::UN_OP:
+                    processUnOperator();
+                    break;
+                case tokenType::CONST:
+                    processConst();
+                    break;
+                case tokenType::UNKNOWN:
+                    [[unlikely]]
+                            error("InterpretingUnit received UNKNOWN token\n");
+                    break;
+            }
         }
+    }
+    catch(const std::runtime_error& exc){
+
     }
 
     return AST(nullptr);
@@ -141,7 +148,7 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
             while (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
                 getNextToken();
                 rBuffer = loadExpressionArgument();
-                lBuffer = processMULTOperator(lBuffer, rBuffer);
+                lBuffer = processMUL(lBuffer, rBuffer);
             }
         } else if (actualToken.getTokenInfo().bOpType == binOpType::ADD) {
             getNextToken();
@@ -154,7 +161,7 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
                 while (actualToken.getTokenInfo().bOpType == binOpType::MULT){
                     getNextToken();
                     rBuffer = loadExpressionArgument();
-                    tempBuff = processMULTOperator(tempBuff, rBuffer);
+                    tempBuff = processMUL(tempBuff, rBuffer);
                 }
                 rBuffer = tempBuff;
             }
@@ -162,7 +169,7 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
                 error("Invalid expression syntax encountered");
             }
 
-            lBuffer = processADDOperator(lBuffer, rBuffer);
+            lBuffer = processADD(lBuffer, rBuffer);
         } else if (actualToken.getTokenInfo().sType == separatorType::SEMI_COLON)
             break;
         else {

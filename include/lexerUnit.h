@@ -69,7 +69,7 @@ private:
     inline void processSemiColon();
 public:
     lexerUnit(char* file, size_t size): file{file }, fSize {size }{
-        tokens.emplace_back(token::tokenInfo(separatorType::SEMI_COLON));
+        tokens.emplace_back(token::tokenInfo(separatorType::SEMI_COLON), line);
     }
     std::list<token> breakToTokens();
 };

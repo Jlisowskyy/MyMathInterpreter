@@ -8,6 +8,7 @@
 #include <exception>
 #include <limits>
 #include <iostream>
+#include <fstream>
 
 #include "../include/parserUnit.h"
 #include "../include/errors.h"
@@ -185,7 +186,9 @@ std::list<token> parserUnit::getLexTokens(size_t fSize) {
 }
 
 void parserUnit::processFile(const char* filename) {
+    lastFilename = filename;
     std::list<token> tokenList;
+    bool isParsingStarted { false };
 
     try{
         std::ifstream ftp;
@@ -195,11 +198,16 @@ void parserUnit::processFile(const char* filename) {
         fSize = loadReadFile(ftp);
         tokenList = getLexTokens(fSize);
 
-        InterpretingUnit interpreter(std::move(tokenList));
+        InterpretingUnit interpreter(tokenList);
         interpreter.lineDispatcher();
     }
     catch(const std::exception& err){
         std::cerr << err.what();
+
+        if (isParsingStarted){
+            std::string erroredLine = getLine(tokenList.front().line);
+            std::cerr << "Occurred on this line:\n" << erroredLine << std::endl;
+        }
 
         if (saveLogToFile){
             logFile << err.what();
@@ -219,4 +227,22 @@ void parserUnit::EnableSaveToFile() {
 #ifdef DEBUG_
     openLogFile(debugLogFile, debugDest);
 #endif
+}
+
+std::string parserUnit::getLine(const size_t line) {
+    std::ifstream file(lastFilename);
+    std::string buffer;
+    size_t actLine { 1 };
+
+    while(actLine != line && file){
+        getline(file, buffer, '\n');
+        ++actLine;
+    }
+
+    if (actLine != line){
+        throw std::runtime_error("[ERROR] Passed line does not exist\n");
+    }
+
+    getline(file, buffer, '\n');
+    return buffer;
 }

@@ -12,10 +12,11 @@
 
 class parserUnit{
     // Logging simple messages and occurred problems
-    bool saveLogToFile = false;
+    bool saveLogToFile { false };
     const char* logDest = parserLogsDestDefault;
     std::ofstream logFile;
-    char* fileContent = nullptr;
+    const char* lastFilename { nullptr };
+    char* fileContent { nullptr };
 
 #ifdef DEBUG_
     const char* debugDest = parserDebugDestDefault;
@@ -25,11 +26,10 @@ class parserUnit{
     static void openLogFile(std::ofstream& fstr, const char* dest);
     void openReadFile(std::ifstream & fstr, const char* src);
     size_t loadReadFile(std::ifstream& fstr);
+    std::string getLine(size_t line); // Used only to write line out in error messaging
 
 public:
     ~parserUnit(){ delete[] fileContent; }
-
-public:
     void EnableSaveToFile();
     void SetLogDest(const char* newDest){
         logDest = newDest;

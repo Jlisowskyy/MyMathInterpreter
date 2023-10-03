@@ -10,19 +10,19 @@
 void printDataPack(dataPack &x) {
     switch (x.dType) {
         case dataType::floatingPoint:
-            std::cout << *((FloatingPointType*)x.dataPtr);
+            std::cout << x.dUnion.fpVal;
             break;
         case dataType::matrix:
-            std::cout << *((MatrixType*)x.dataPtr);
+            std::cout << *((MatrixType*)x.dUnion.dynamicDataPtr);
             break;
         case dataType::vector:
-            std::cout << *((VectorType*)x.dataPtr);
+            std::cout << *((VectorType*)x.dUnion.dynamicDataPtr);
             break;
         case dataType::integer:
-            std::cout << *((IntegerType*)x.dataPtr);
+            std::cout << x.dUnion.intVal;
             break;
         case dataType::constChar:
-            std::cout << *((const char*)x.dataPtr);
+            std::cout << x.dUnion.constChar;
             break;
         case dataType::voidType:
             std::cout << "VOID TYPE";
@@ -75,13 +75,13 @@ dataPack::dataPack(FloatingPointType val) :
     dType = dataType::floatingPoint;
 }
 
-dataPack::dataPack(MatrixType &val) {
+dataPack::dataPack(MatrixType val) {
     // TODO: ADD HERE SUPERVISED ALLOCATION
     dUnion.dynamicDataPtr = nullptr;
     dType = dataType::matrix;
 }
 
-dataPack::dataPack(VectorType &val) {
+dataPack::dataPack(VectorType val) {
     dUnion.dynamicDataPtr = nullptr;
     dType = dataType::vector;
 }

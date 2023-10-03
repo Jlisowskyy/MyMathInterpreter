@@ -13,5 +13,4 @@ inline void throwIfQMLack(char x) noexcept(false)
     }
 }
 
-
 #endif //INTERPRETER_ERRORS_H

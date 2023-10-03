@@ -171,7 +171,7 @@ void lexerUnit::expectNewToken() {
 }
 
 void lexerUnit::cSep(separatorType type) {
-    tokens.emplace_back(token::tokenInfo(type));
+    tokens.emplace_back(token::tokenInfo(type), line);
 
     auto lastOpenedSep = separatorStack.top();
     if (lastOpenedSep != type) [[unlikely]]{
@@ -185,13 +185,13 @@ void lexerUnit::cSep(separatorType type) {
 }
 
 void lexerUnit::sep(separatorType type) {
-    tokens.emplace_back(token::tokenInfo(type));
+    tokens.emplace_back(token::tokenInfo(type), line);
     file[curPos] = '\0';
     expectNewToken();
 }
 
 inline void lexerUnit::op(token::tokenInfo tInfo) {
-    tokens.emplace_back(tInfo);
+    tokens.emplace_back(tInfo, line);
     file[curPos] = '\0';
     expectNewToken();
 }
@@ -226,7 +226,7 @@ void lexerUnit::processComment() {
 
 void lexerUnit::processConstChar() {
     file[curPos++] = '\0';
-    token temp {token::tokenInfo(dataType::constChar) };
+    token temp {token::tokenInfo(dataType::constChar), line };
     temp.setConstCharVal(file + curPos);
     tokens.push_back(temp);
 
@@ -317,7 +317,7 @@ void lexerUnit::processNumber() {
             // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(intVal, token::tokenInfo(dataType::integer));
+            tokens.emplace_back(intVal, token::tokenInfo(dataType::integer), line);
             expectNewToken();
         }
         else{
@@ -332,7 +332,7 @@ void lexerUnit::processNumber() {
             // curPos should indicate an already used character because of the main lexerUnit loop
             curPos += (end - begin) - 1;
 
-            tokens.emplace_back(fpVal, token::tokenInfo(dataType::floatingPoint));
+            tokens.emplace_back(fpVal, token::tokenInfo(dataType::floatingPoint), line);
             expectNewToken();
         }
     }
@@ -388,7 +388,7 @@ void lexerUnit::processBigger() {
 void lexerUnit::processEmptyChar() {
     if (isNewToken)[[unlikely]]{
         isNewToken = false;
-        token temp { token::tokenInfo(tokenType::VAR) };
+        token temp { token::tokenInfo(tokenType::VAR), line };
         temp.setIdentifier(file + curPos);
         tokens.emplace_back(temp);
     }
