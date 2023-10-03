@@ -27,7 +27,7 @@ class InterpretingUnit{
 
     // work helpers
     void getNextToken();
-    void error(std::string errorMsg);
+    static void error(const std::string& errorMsg);
 
     /*  Important notes:
      *  - all processing functions are expected to leave actualToken variable at last used token,

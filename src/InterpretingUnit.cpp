@@ -20,11 +20,15 @@ InterpretingUnit::InterpretingUnit(std::list<token> &tokens) :
 }
 
 void InterpretingUnit::getNextToken() {
+    if (tokenStream.empty()) [[unlikely]]{
+        throw std::runtime_error("[ERROR] Lack of expected token!\n");
+    }
+
     actualToken = tokenStream.front();
     tokenStream.pop_front();
 }
 
-void InterpretingUnit::error(std::string errorMsg) {
+void InterpretingUnit::error(const std::string& errorMsg) {
     throw std::runtime_error("[ERROR] " + errorMsg);
 }
 
@@ -33,44 +37,39 @@ void InterpretingUnit::error(std::string errorMsg) {
 // -------------------------------------------
 
 AST InterpretingUnit::lineDispatcher() {
-
-    try{
-        while (!tokenStream.empty()) {
-            getNextToken();
-            switch (auto &tInfo = actualToken.getTokenInfo(); tInfo.tType) {
-                case tokenType::VAR:
-                    processVar();
-                    break;
-                case tokenType::SEPARATOR:
-                    processSeparator();
-                    break;
-                case tokenType::PROC:
-                    processProcInvocAsFirstToken();
-                    break;
-                case tokenType::BIN_OP:
-                    error("Invalid use of binary operator: missing left operand\n");
-                    break;
-                case tokenType::KEYWORD:
-                    processKeyword();
-                    break;
-                case tokenType::UN_OP:
-                    processUnOperator();
-                    break;
-                case tokenType::CONST:
-                    processConst();
-                    break;
-                case tokenType::UNKNOWN:
-                    [[unlikely]]
-                            error("InterpretingUnit received UNKNOWN token\n");
-                    break;
-            }
+    while (!tokenStream.empty()) {
+        getNextToken();
+        switch (auto &tInfo = actualToken.getTokenInfo(); tInfo.tType) {
+            case tokenType::VAR:
+                processVar();
+                break;
+            case tokenType::SEPARATOR:
+                processSeparator();
+                break;
+            case tokenType::PROC:
+                processProcInvocAsFirstToken();
+                break;
+            case tokenType::BIN_OP:
+                error("Invalid use of binary operator: missing left operand\n");
+                break;
+            case tokenType::KEYWORD:
+                processKeyword();
+                break;
+            case tokenType::UN_OP:
+                processUnOperator();
+                break;
+            case tokenType::CONST:
+                processConst();
+                break;
+            case tokenType::UNKNOWN:
+                [[unlikely]]
+                        error("InterpretingUnit received UNKNOWN token\n");
+                break;
         }
     }
-    catch(const std::runtime_error& exc){
 
-    }
 
-    return AST(nullptr);
+    return {nullptr};
 }
 
 // -------------------------------------------
@@ -86,7 +85,6 @@ void InterpretingUnit::processSeparator() {
         case separatorType::SEMI_COLON:
             break;
         case separatorType::PARENTHESIS_OPEN:
-
             break;
         default: [[unlikely]]
             error("invalid use of separator appeared\n");
@@ -112,7 +110,7 @@ void InterpretingUnit::processVar() {
 
 void InterpretingUnit::processConst() {
     switch (actualToken.getTokenInfo().cType) {
-        case dataType::constChar: [[unlikely]]
+        case dataType::constChar: [[unlikely]] // TODO: ADD CONST CHAR OPERATIONS
 
             getNextToken();
             if (actualToken.getTokenInfo().sType != separatorType::SEMI_COLON)[[unlikely]]{
@@ -138,6 +136,24 @@ void InterpretingUnit::processNumExpression() {
 
 }
 
+dataPack InterpretingUnit::loadExpressionArgument() {
+    if (actualToken.getTokenInfo().sType == separatorType::PARENTHESIS_OPEN){
+        getNextToken();
+        return evalNumExpression(separatorType::PARENTHESIS_CLOSED);
+        getNextToken();
+    }
+    else if (actualToken.getTokenInfo().tType == tokenType::VAR){
+        return mm.getDPack(actualToken.getIdentifier());
+    }
+    else if (actualToken.getTokenInfo().tType == tokenType::CONST){
+        return getDPack(actualToken);
+    }
+    else{
+        // TODO: BETTER CONTEXT ERROR HERE
+        error("Invalid expression syntax encountered - loadExpressionArgument\n");
+    }
+}
+
 dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
     dataPack lBuffer, rBuffer;
     lBuffer = loadExpressionArgument();
@@ -148,34 +164,41 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
             while (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
                 getNextToken();
                 rBuffer = loadExpressionArgument();
+                getNextToken();
                 lBuffer = processMUL(lBuffer, rBuffer);
             }
         } else if (actualToken.getTokenInfo().bOpType == binOpType::ADD) {
             getNextToken();
+            auto nextTokenInf = tokenStream.front().getTokenInfo();
 
-            if (auto x = actualToken.getTokenInfo(); x.bOpType == binOpType::ADD || x.sType ==  separatorType::SEMI_COLON){
+            if (nextTokenInf.bOpType == binOpType::ADD || nextTokenInf.sType ==  terminationSign
+                    || actualToken.getTokenInfo().sType == separatorType::PARENTHESIS_OPEN){
                 rBuffer = loadExpressionArgument();
+                getNextToken();
             }
-            else if (actualToken.getTokenInfo().bOpType == binOpType::MULT) {
+            else if (nextTokenInf.bOpType == binOpType::MULT) {
                 dataPack tempBuff = loadExpressionArgument();
+                getNextToken();
+
                 while (actualToken.getTokenInfo().bOpType == binOpType::MULT){
                     getNextToken();
                     rBuffer = loadExpressionArgument();
+                    getNextToken();
                     tempBuff = processMUL(tempBuff, rBuffer);
                 }
                 rBuffer = tempBuff;
             }
             else{
-                error("Invalid expression syntax encountered");
+                error("Invalid expression syntax encountered - evalNumExpression - Inner layer\n");
             }
 
             lBuffer = processADD(lBuffer, rBuffer);
-        } else if (actualToken.getTokenInfo().sType == separatorType::SEMI_COLON)
+        } else if (actualToken.getTokenInfo().sType == terminationSign) {
             break;
-        else {
-            error("Invalid expression syntax encountered\n");
         }
-        getNextToken();
+        else {
+            error("Invalid expression syntax encountered - evalNumExpression - Outer layer\n");
+        }
     }
 
     return lBuffer;
@@ -194,7 +217,7 @@ void InterpretingUnit::processAssignment()
     auto identifier { actualToken.getIdentifier() };
     getNextToken(); // Consumes '=' token
     getNextToken();
-    auto result = evalNumExpression(separatorType::COLON);
+    auto result = evalNumExpression(separatorType::SEMI_COLON);
     mm.addDPack(identifier, result);
 }
 
@@ -267,24 +290,6 @@ void InterpretingUnit::printToken(token x) {
             break;
         default: [[unlikely]]
                     error("Invalid debug print argument\n");
-    }
-}
-
-dataPack InterpretingUnit::loadExpressionArgument() {
-    if (actualToken.getTokenInfo().sType == separatorType::PARENTHESIS_OPEN){
-        getNextToken();
-        return evalNumExpression(separatorType::PARENTHESIS_CLOSED);
-        getNextToken();
-    }
-    else if (actualToken.getTokenInfo().tType == tokenType::VAR){
-        return mm.getDPack(actualToken.getIdentifier());
-    }
-    else if (actualToken.getTokenInfo().tType == tokenType::CONST){
-        return getDPack(actualToken);
-    }
-    else{
-        // TODO: BETTER CONTEXT ERROR HERE
-        error("Invalid expression syntax encountered\n");
     }
 }
 

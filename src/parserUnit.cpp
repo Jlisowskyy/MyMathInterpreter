@@ -199,18 +199,29 @@ void parserUnit::processFile(const char* filename) {
         tokenList = getLexTokens(fSize);
 
         InterpretingUnit interpreter(tokenList);
+        isParsingStarted = true;
         interpreter.lineDispatcher();
     }
     catch(const std::exception& err){
+        static const std::string lineErr("\nOccurred on line: ");
         std::cerr << err.what();
 
         if (isParsingStarted){
-            std::string erroredLine = getLine(tokenList.front().line);
-            std::cerr << "Occurred on this line:\n" << erroredLine << std::endl;
+            const size_t errorLineNumber { tokenList.front().line };
+
+            std::string errorLine = getLine(errorLineNumber);
+            std::cerr << lineErr + std::to_string(errorLineNumber) + " \n" << errorLine << std::endl;
         }
 
         if (saveLogToFile){
             logFile << err.what();
+
+            if (isParsingStarted){
+                const size_t errorLineNumber { tokenList.front().line };
+
+                std::string errorLine = getLine(errorLineNumber);
+                logFile << lineErr + std::to_string(errorLineNumber) + " \n" << errorLine << std::endl;
+            }
         }
 
         exit(1);
@@ -240,7 +251,8 @@ std::string parserUnit::getLine(const size_t line) {
     }
 
     if (actLine != line){
-        throw std::runtime_error("[ERROR] Passed line does not exist\n");
+        throw std::runtime_error(std::string("[ERROR] Not able to reach passed line inside file: \n")
+                                                + lastFilename + ", and line: " + std::to_string(line));
     }
 
     getline(file, buffer, '\n');

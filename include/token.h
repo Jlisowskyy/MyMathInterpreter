@@ -47,7 +47,7 @@ private:
     IntegerType inVal { IntegerType{} };
 
 public:
-    size_t line{}; // Used in debugging to find correct line inside file
+    size_t line{}; // Used in debugging to find the line, containing error inside file
     explicit token(): tInfo{} {}
     explicit token(tokenInfo info, size_t line): tInfo{ info }, line{ line }{}
     explicit token(FloatingPointType val, tokenInfo info, size_t line): tInfo{ info }, fpVal{ val }, line{ line }{}

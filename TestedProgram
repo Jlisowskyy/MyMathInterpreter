@@ -16,5 +16,7 @@
 #    print("Goodbye World!\n");
 #end
 
-var2 = 5 * (1 + 2) * *;
-print(var2);
+uszatekm = (10+(5*2+(10+5*(2+7 * 9 * 9 + 3 * 3 * 3 * 3))));
+
+#uszatekm = uszatekm * 2;
+print(uszatekm);
