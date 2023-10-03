@@ -77,7 +77,15 @@ AST InterpretingUnit::lineDispatcher() {
 // -------------------------------------------
 
 void InterpretingUnit::processUnOperator() {
-    // TODO
+    switch (actualToken.getTokenInfo().uOpType) {
+
+        case unaryOpType::LOGICAL_NEGATION:
+            break;
+        case unaryOpType::MATHEMATICAL_NEGATION:
+            break;
+        case unaryOpType::UNKNOWN:
+            break;
+    }
 }
 
 void InterpretingUnit::processSeparator() {
@@ -85,6 +93,7 @@ void InterpretingUnit::processSeparator() {
         case separatorType::SEMI_COLON:
             break;
         case separatorType::PARENTHESIS_OPEN:
+            lastResult = evalNumExpression(separatorType::PARENTHESIS_CLOSED);
             break;
         default: [[unlikely]]
             error("invalid use of separator appeared\n");
@@ -104,7 +113,7 @@ void InterpretingUnit::processVar() {
     if (tokenStream.front().getTokenInfo().bOpType == binOpType::ASSIGN) {
         processAssignment();
     } else {
-        processNumExpression();
+        lastResult = evalNumExpression(separatorType::SEMI_COLON);
     }
 }
 
@@ -112,6 +121,7 @@ void InterpretingUnit::processConst() {
     switch (actualToken.getTokenInfo().cType) {
         case dataType::constChar: [[unlikely]] // TODO: ADD CONST CHAR OPERATIONS
 
+            lastResult = getDPack(actualToken);
             getNextToken();
             if (actualToken.getTokenInfo().sType != separatorType::SEMI_COLON)[[unlikely]]{
                 error("invalid use of const char literal\n");
@@ -121,9 +131,8 @@ void InterpretingUnit::processConst() {
         case dataType::voidType: [[unlikely]]
             error("UNKNOWN const type-appeared: lexer bug encountered'\n");
             break;
-        default:
-            [[likely]]
-                    processNumExpression();
+        default: [[likely]]
+            lastResult = evalNumExpression(separatorType::SEMI_COLON);
             break;
     }
 }
@@ -132,7 +141,7 @@ void InterpretingUnit::processConst() {
 // Grammatical structures procedures
 // -------------------------------------------
 
-void InterpretingUnit::processNumExpression() {
+AST * InterpretingUnit::processNumExpression() {
 
 }
 
@@ -140,7 +149,6 @@ dataPack InterpretingUnit::loadExpressionArgument() {
     if (actualToken.getTokenInfo().sType == separatorType::PARENTHESIS_OPEN){
         getNextToken();
         return evalNumExpression(separatorType::PARENTHESIS_CLOSED);
-        getNextToken();
     }
     else if (actualToken.getTokenInfo().tType == tokenType::VAR){
         return mm.getDPack(actualToken.getIdentifier());
@@ -202,14 +210,6 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
     }
 
     return lBuffer;
-}
-
-void InterpretingUnit::processNumSubExpressionInParenthesis() {
-
-}
-
-dataPack InterpretingUnit::evalNumSubExpressionInParenthesis() {
-    return dataPack();
 }
 
 void InterpretingUnit::processAssignment()
@@ -284,6 +284,12 @@ void InterpretingUnit::printToken(token x) {
                     break;
                 case dataType::voidType: [[unlikely]]
                     error("Passed UNKNOWN const type\n");
+                    break;
+                case dataType::matrix:
+                    error("Passed MATRIX const type - not implemented\n"); //TODO:
+                    break;
+                case dataType::vector:
+                    error("Passed VECTOR const type - not implemented\n"); //TODO:
                     break;
             }
             

@@ -25,6 +25,8 @@ class InterpretingUnit{
     token actualToken{};
     MemoryManager mm;
 
+    dataPack lastResult{};
+
     // work helpers
     void getNextToken();
     static void error(const std::string& errorMsg);
@@ -40,15 +42,13 @@ class InterpretingUnit{
 
     // Grammatical structures procedures
     inline void processProcInvocAsFirstToken();
-    void processNumExpression();
+    AST * processNumExpression();
 
     // interpreter action methods
     dataPack loadExpressionArgument();
 
     // TODO: test template here
     dataPack evalNumExpression(separatorType terminationSign);
-    void processNumSubExpressionInParenthesis();
-    dataPack evalNumSubExpressionInParenthesis();
     inline void processAssignment();
 
 
