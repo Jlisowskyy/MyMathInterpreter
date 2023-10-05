@@ -2,7 +2,7 @@
 // Created by Jlisowskyy on 08/08/2023.
 //
 
-#include "include/parserUnit.h"
+#include "include/ParserUnit.h"
 #include <chrono>
 #include <iostream>
 
@@ -11,7 +11,7 @@ int main(int argc, const char** argv){
         throw std::runtime_error("[ERROR] Missing file name");
     }
 
-    parserUnit parU{};
+    ParserUnit parU{};
     parU.EnableSaveToFile();
 
     auto start = std::chrono::steady_clock::now();

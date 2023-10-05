@@ -5,15 +5,14 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Interpreter
         main.cpp
-        include/parserUnit.h
+        include/ParserUnit.h
         src/MyMathInterpreter.cpp
         include/globalValues.h
-        src/parserUnit.cpp
-        include/token.h
-        src/token.cpp
+        src/ParserUnit.cpp
+        include/Token.h
         include/errors.h
-        include/lexerUnit.h
-        src/lexerUnit.cpp
+        include/LexerUnit.h
+        src/LexerUnit.cpp
         include/InterpretingUnit.h
         src/InterpretingUnit.cpp
         include/AST.h
@@ -21,6 +20,6 @@ add_executable(Interpreter
         src/AST.cpp
         src/operatorsProc.cpp
         include/StdBasedHashTable.h
-        include/garbageCollector.h)
+        include/GarbageCollector.h)
 
-target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;)
+target_compile_options(Interpreter PUBLIC -Wall;-Wextra;-Wformat=2;-Wunused;-march=native;-O3;)

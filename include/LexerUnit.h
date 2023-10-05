@@ -6,13 +6,13 @@
 #define INTERPRETER_LEXERUNIT_H
 
 #include "../include/globalValues.h"
-#include "../include/token.h"
+#include "../include/Token.h"
 #include <list>
 #include <stack>
 #include <unordered_map>
 
-class lexerUnit{
-    std::list<token> tokens {};
+class LexerUnit{
+    std::list<Token> tokens {};
     std::stack<separatorType> separatorStack {};
     char* file { nullptr };
     size_t fSize { 0 };
@@ -20,7 +20,7 @@ class lexerUnit{
     size_t line { 1 };
     bool isNewToken { false };
 
-    using reactProc = void(lexerUnit::*)();
+    using reactProc = void(LexerUnit::*)();
     // TODO: optimise gain possible: look for constexpr reacitonMap, keywordMap
     static const reactProc reactionMap[ASCII_SIZE];
     static const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> keyWordMap;
@@ -28,7 +28,7 @@ private:
     inline void abandonIfEmpty() noexcept(false){
         if (tokens.empty()) [[unlikely]]
         {
-            throw std::runtime_error("[ERROR] Invalid use of operator or separator token on first line\n");
+            throw std::runtime_error("[ERROR] Invalid use of operator or separator Token on first line\n");
         }
     }
 
@@ -37,7 +37,7 @@ private:
 //    inline void op(char val);;
     inline void sep(separatorType type);
     inline void cSep(separatorType type);
-    inline void op(token::tokenInfo tInfo);
+    inline void op(Token::tokenInfo tInfo);
 
     inline void Nothing() {}
     inline void processComment();
@@ -68,10 +68,10 @@ private:
     inline void processAND();
     inline void processSemiColon();
 public:
-    lexerUnit(char* file, size_t size): file{file }, fSize {size }{
-        tokens.emplace_back(token::tokenInfo(separatorType::SEMI_COLON), line);
+    LexerUnit(char* file, size_t size): file{file }, fSize {size }{
+        tokens.emplace_back(Token::tokenInfo(separatorType::SEMI_COLON), line);
     }
-    std::list<token> breakToTokens();
+    std::list<Token> breakToTokens();
 };
 
 #endif //INTERPRETER_LEXERUNIT_H

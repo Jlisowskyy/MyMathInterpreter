@@ -9,7 +9,7 @@
 
 // TODO: consider using UNKNOWN = 0 to make initialisation easier !!!
 
-class token{
+class Token{
 public:
     struct tokenInfo{
         // TODO: CONSIDER UNION HERE!!!
@@ -48,10 +48,10 @@ private:
 
 public:
     size_t line{}; // Used in debugging to find the line, containing error inside file
-    explicit token(): tInfo{} {}
-    explicit token(tokenInfo info, size_t line): tInfo{ info }, line{ line }{}
-    explicit token(FloatingPointType val, tokenInfo info, size_t line): tInfo{ info }, fpVal{ val }, line{ line }{}
-    explicit token(IntegerType val, tokenInfo info, size_t line): tInfo{ info }, inVal{ val }, line{ line }{}
+    explicit Token(): tInfo{} {}
+    explicit Token(tokenInfo info, size_t line): tInfo{info }, line{line }{}
+    explicit Token(FloatingPointType val, tokenInfo info, size_t line): tInfo{info }, fpVal{val }, line{line }{}
+    explicit Token(IntegerType val, tokenInfo info, size_t line): tInfo{info }, inVal{val }, line{line }{}
 
     // Used mainly in debugging options
     inline const char* getIdentifier() const { return identifier; }

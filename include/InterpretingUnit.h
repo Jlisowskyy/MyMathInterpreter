@@ -8,7 +8,7 @@
 #include <list>
 #include <stack>
 
-#include "token.h"
+#include "Token.h"
 #include "AST.h"
 #include "StdBasedHashTable.h"
 
@@ -18,11 +18,11 @@
 //--------------
 
 class InterpretingUnit{
-    std::list<token>& tokenStream;
+    std::list<Token>& tokenStream;
     std::stack<ASTNode*> nodesStack;
     std::list<AST> executionPath;
     ASTNode* currentTree { nullptr };
-    token actualToken{};
+    Token actualToken{};
     MemoryManager mm;
 
     dataPack lastResult{};
@@ -32,7 +32,7 @@ class InterpretingUnit{
     static void error(const std::string& errorMsg);
 
     /*  Important notes:
-     *  - all processing functions are expected to leave actualToken variable at last used token,
+     *  - all processing functions are expected to leave actualToken variable at last used Token,
      *      so the main loop could begin translating the next sentence by itself,
      *  - all processing functions should care to check if there is correct semicolon usage appearing,
      *
@@ -60,12 +60,12 @@ class InterpretingUnit{
     inline void processConst();
 
 public:
-    InterpretingUnit(std::list<token>& tokens);
+    InterpretingUnit(std::list<Token>& tokens);
     AST lineDispatcher();
 
 #ifdef DEBUG_
     // temporary printing tool
-    void printToken(token x);
+    void printToken(Token x);
 #endif
 };
 

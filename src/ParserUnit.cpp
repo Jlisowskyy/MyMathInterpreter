@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../include/parserUnit.h"
+#include "../include/ParserUnit.h"
 #include "../include/errors.h"
 #include "../include/InterpretingUnit.h"
 
@@ -48,8 +48,8 @@ size_t chopConstChar(char * file, size_t curPos) {
 
 #ifdef DEBUG_
 
-void writeListOut(std::ofstream &dst, std::list<token> &list){
-    auto printTokenName = [&](token& x) -> void {
+void writeListOut(std::ofstream &dst, std::list<Token> &list){
+    auto printTokenName = [&](Token& x) -> void {
         switch (auto tInfo = x.getTokenInfo(); tInfo.tType) {
             case tokenType::VAR:
                 dst << x.getIdentifier();
@@ -98,7 +98,7 @@ void writeListOut(std::ofstream &dst, std::list<token> &list){
 
 #endif
 
-void parserUnit::openLogFile(std::ofstream &fstr, const char *dest) {
+void ParserUnit::openLogFile(std::ofstream &fstr, const char *dest) {
     if (fstr.is_open()) fstr.close();
 
     fstr.open(std::string(dest) + getTodayDate() + ".log", std::ios::app );
@@ -112,7 +112,7 @@ void parserUnit::openLogFile(std::ofstream &fstr, const char *dest) {
     fstr << WideSep<< getTodayDate(true) << '\n' << WideSep ;
 }
 
-void parserUnit::openReadFile(std::ifstream &fstr, const char *src) {
+void ParserUnit::openReadFile(std::ifstream &fstr, const char *src) {
     if (fstr.is_open()) fstr.close();
     fstr.open(src);
 
@@ -133,7 +133,7 @@ void parserUnit::openReadFile(std::ifstream &fstr, const char *src) {
     }
 }
 
-size_t parserUnit::loadReadFile(std::ifstream& fstr) {
+size_t ParserUnit::loadReadFile(std::ifstream& fstr) {
     std::streamsize fSize;
 
     fstr.ignore(std::numeric_limits<std::streamsize>::max());
@@ -165,10 +165,10 @@ size_t parserUnit::loadReadFile(std::ifstream& fstr) {
     return fSize;
 }
 
-std::list<token> parserUnit::getLexTokens(size_t fSize) {
-    std::list<token> tokenList;
+std::list<Token> ParserUnit::getLexTokens(size_t fSize) {
+    std::list<Token> tokenList;
 
-    lexerUnit tkn(fileContent, fSize);
+    LexerUnit tkn(fileContent, fSize);
     tokenList = tkn.breakToTokens();
 
     if (saveLogToFile){
@@ -185,9 +185,9 @@ std::list<token> parserUnit::getLexTokens(size_t fSize) {
     return tokenList;
 }
 
-void parserUnit::processFile(const char* filename) {
+void ParserUnit::processFile(const char* filename) {
     lastFilename = filename;
-    std::list<token> tokenList;
+    std::list<Token> tokenList;
     bool isParsingStarted { false };
 
     try{
@@ -228,11 +228,11 @@ void parserUnit::processFile(const char* filename) {
     }
 }
 
-void parserUnit::processCin() {
+void ParserUnit::processCin() {
     return;
 }
 
-void parserUnit::EnableSaveToFile() {
+void ParserUnit::EnableSaveToFile() {
     saveLogToFile = true;
     openLogFile(logFile, logDest);
 #ifdef DEBUG_
@@ -240,7 +240,7 @@ void parserUnit::EnableSaveToFile() {
 #endif
 }
 
-std::string parserUnit::getLine(const size_t line) {
+std::string ParserUnit::getLine(const size_t line) {
     std::ifstream file(lastFilename);
     std::string buffer;
     size_t actLine { 1 };

@@ -8,9 +8,9 @@
 #include <list>
 
 #include "globalValues.h"
-#include "../include/lexerUnit.h"
+#include "../include/LexerUnit.h"
 
-class parserUnit{
+class ParserUnit{
     // Logging simple messages and occurred problems
     bool saveLogToFile { false };
     const char* logDest = parserLogsDestDefault;
@@ -29,7 +29,7 @@ class parserUnit{
     std::string getLine(size_t line); // Used only to write line out in error messaging
 
 public:
-    ~parserUnit(){ delete[] fileContent; }
+    ~ParserUnit(){ delete[] fileContent; }
     void EnableSaveToFile();
     void SetLogDest(const char* newDest){
         logDest = newDest;
@@ -41,7 +41,7 @@ public:
     }
 #endif
 private:
-    std::list<token> getLexTokens(size_t fSize);
+    std::list<Token> getLexTokens(size_t fSize);
 
 public:
     // TODO: possibly in future will return ast trees or something
@@ -55,7 +55,7 @@ inline size_t chopConstChar(char*, size_t);
 inline size_t getToken(std::list<std::string>&, char*);
 
 #ifdef DEBUG_
-void writeListOut(std::ofstream& dst, std::list<token>& list);
+void writeListOut(std::ofstream& dst, std::list<Token>& list);
 #endif // DEBUG_
 
 #endif //INTERPRETER_PARSERUNIT_H

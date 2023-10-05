@@ -12,3 +12,5 @@ DebugLogs/
 Logs/
 .vscode/
 build/
+makebuild/
+main

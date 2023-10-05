@@ -7,21 +7,21 @@
 // Class structural methods and helping methods
 // -------------------------------------------
 
-InterpretingUnit::InterpretingUnit(std::list<token> &tokens) :
+InterpretingUnit::InterpretingUnit(std::list<Token> &tokens) :
         tokenStream{ tokens }{
     if (tokenStream.empty()) [[unlikely]]{
-        throw std::runtime_error("[ERROR] Illegal empty token list passed to parser\n");
+        throw std::runtime_error("[ERROR] Illegal empty Token list passed to parser\n");
     }
 
-    // Convention that token list begins with semicolon separator
+    // Convention that Token list begins with semicolon separator
     if (tokenStream.front().getTokenInfo().sType != separatorType::SEMI_COLON) [[unlikely]]{
-        throw std::runtime_error("[ERROR] Not valid first token on token list occurred. Refer to documentation\n");
+        throw std::runtime_error("[ERROR] Not valid first Token on Token list occurred. Refer to documentation\n");
     }
 }
 
 void InterpretingUnit::getNextToken() {
     if (tokenStream.empty()) [[unlikely]]{
-        throw std::runtime_error("[ERROR] Lack of expected token!\n");
+        throw std::runtime_error("[ERROR] Lack of expected Token!\n");
     }
 
     actualToken = tokenStream.front();
@@ -63,7 +63,7 @@ AST InterpretingUnit::lineDispatcher() {
                 break;
             case tokenType::UNKNOWN:
                 [[unlikely]]
-                        error("InterpretingUnit received UNKNOWN token\n");
+                        error("InterpretingUnit received UNKNOWN Token\n");
                 break;
         }
     }
@@ -73,7 +73,7 @@ AST InterpretingUnit::lineDispatcher() {
 }
 
 // -------------------------------------------
-// token deeper analyzers
+// Token deeper analyzers
 // -------------------------------------------
 
 void InterpretingUnit::processUnOperator() {
@@ -215,7 +215,7 @@ dataPack InterpretingUnit::evalNumExpression(separatorType terminationSign) {
 void InterpretingUnit::processAssignment()
 {
     auto identifier { actualToken.getIdentifier() };
-    getNextToken(); // Consumes '=' token
+    getNextToken(); // Consumes '=' Token
     getNextToken();
     auto result = evalNumExpression(separatorType::SEMI_COLON);
     mm.addDPack(identifier, result);
@@ -243,7 +243,7 @@ void InterpretingUnit::processProcInvocAsFirstToken() {
 
 #ifdef DEBUG_
 
-void InterpretingUnit::printToken(token x) {
+void InterpretingUnit::printToken(Token x) {
     dataPack var{};
     
     switch ( x.getTokenInfo().tType) {

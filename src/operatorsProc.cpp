@@ -38,7 +38,7 @@ dataPack processUnaryOperand(unaryPack x) {
     return x.Arg;
 }
 
-dataPack getDPack(token x) {
+dataPack getDPack(Token x) {
     switch (x.getTokenInfo().cType) {
         case dataType::floatingPoint:
             return dataPack{ x.getFpVal() };

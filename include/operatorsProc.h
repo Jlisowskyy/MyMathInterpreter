@@ -6,7 +6,7 @@
 #define INTERPRETER_OPERATORSPROC_H
 
 #include "globalValues.h"
-#include "token.h"
+#include "Token.h"
 
 struct dataPack{
     union{
@@ -24,7 +24,7 @@ struct dataPack{
     explicit dataPack(VectorType val);
 };
 
-dataPack getDPack(token x);
+dataPack getDPack(Token x);
 void printDataPack(dataPack& x);
 
 // ------------------------------
