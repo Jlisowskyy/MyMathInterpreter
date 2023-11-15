@@ -12,7 +12,11 @@
 #include "globalValues.h"
 #include "operatorsProc.h"
 
-// Ready to execute object
+/*  IMPORTANT - EXPERIMENTAL MODULE
+ * - not used anywhere yet
+ * - probable use case is to implement reusable sequence of code in some abstract way
+ * - used to just sketch an outline of future solutions
+ * */
 
 class AST;
 class ASTNode;

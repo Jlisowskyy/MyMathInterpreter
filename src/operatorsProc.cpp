@@ -5,9 +5,55 @@
 #include <iostream>
 
 #include "../include/operatorsProc.h"
-#include "../include/globalValues.h"
 
-void printDataPack(dataPack &x) {
+// --------------------------------------
+// dataPack creation implementation
+// --------------------------------------
+
+dataPack::dataPack() :
+    dType{ dataType::voidType }, dUnion{ nullptr }
+{}
+
+dataPack::dataPack(void *dataPtr, dataType type) :
+        dType{ type }, dUnion{ dataPtr } {}
+
+dataPack::dataPack(const char *constChar)
+{
+    dUnion.constChar = constChar;
+    dType = dataType::constChar;
+}
+
+dataPack::dataPack(IntegerType val)
+{
+    dUnion.intVal = val;
+    dType = dataType::integer;
+}
+
+dataPack::dataPack(FloatingPointType val)
+{
+    dUnion.fpVal = val;
+    dType = dataType::floatingPoint;
+}
+
+dataPack::dataPack(MatrixType val) {
+    // TODO: COMPLETE AND ADD SUPERVISED ALLOCATION
+    dUnion.dynamicDataPtr = nullptr;
+    dType = dataType::matrix;
+}
+
+dataPack::dataPack(VectorType val) {
+
+    dUnion.dynamicDataPtr = nullptr;
+    dType = dataType::vector;
+}
+
+// -----------------------------------------------
+// dataPack helping functions implementation
+// -----------------------------------------------
+
+void printDataPack(dataPack &x)
+    // Used mainly during debugging, just prints dataPack on stdout
+{
     switch (x.dType) {
         case dataType::floatingPoint:
             std::cout << x.dUnion.fpVal;
@@ -30,15 +76,9 @@ void printDataPack(dataPack &x) {
     }
 }
 
-dataPack processBinaryOperand(binPack x) {
-    return x.leftArg;
-}
-
-dataPack processUnaryOperand(unaryPack x) {
-    return x.Arg;
-}
-
-dataPack getDPack(Token x) {
+dataPack getDPack(Token x)
+    // TODO: not fully done yet
+{
     switch (x.getTokenInfo().cType) {
         case dataType::floatingPoint:
             return dataPack{ x.getFpVal() };
@@ -51,37 +91,15 @@ dataPack getDPack(Token x) {
     }
 }
 
-dataPack::dataPack(void *dataPtr, dataType type) :
-        dUnion{ dataPtr }, dType{ type } {}
-
-dataPack::dataPack(const char *constChar) :
-        dataPack{}
+dataPack processBinaryOperand(binPack x)
+    // TODO: NOT IMPLEMENTED YET
 {
-    dUnion.constChar = constChar;
-    dType = dataType::constChar;
+    return x.leftArg;
 }
 
-dataPack::dataPack(IntegerType val) :
-        dataPack{}
+dataPack processUnaryOperand(unaryPack x)
+    // TODO: NOT IMPLEMENTED YET
 {
-    dUnion.intVal = val;
-    dType = dataType::integer;
+    return x.Arg;
 }
 
-dataPack::dataPack(FloatingPointType val) :
-        dataPack{}
-{
-    dUnion.fpVal = val;
-    dType = dataType::floatingPoint;
-}
-
-dataPack::dataPack(MatrixType val) {
-    // TODO: ADD HERE SUPERVISED ALLOCATION
-    dUnion.dynamicDataPtr = nullptr;
-    dType = dataType::matrix;
-}
-
-dataPack::dataPack(VectorType val) {
-    dUnion.dynamicDataPtr = nullptr;
-    dType = dataType::vector;
-}

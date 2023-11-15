@@ -13,4 +13,6 @@ inline void throwIfQMLack(char x) noexcept(false)
     }
 }
 
+// TODO: will be populated in future
+
 #endif //INTERPRETER_ERRORS_H

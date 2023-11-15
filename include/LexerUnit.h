@@ -39,7 +39,7 @@ private:
 // methods used to imply correct logic on specific character occurrence
 // --------------------------------------------------------------------------
 
-    /*          IMPORTANT NOTES
+    /*                                        IMPORTANT NOTES
      *  - All separators, operators, special and blank characters are replaced with null character
      *  - Comments are also null filled
      *  - literal values like strings are not copied, there is only pointer to specific file offset

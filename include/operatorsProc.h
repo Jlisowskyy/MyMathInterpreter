@@ -2,27 +2,48 @@
 // Created by Jlisowskyy on 12/09/2023.
 //
 
-#ifndef INTERPRETER_OPERATORSPROC_H
-#define INTERPRETER_OPERATORSPROC_H
+#ifndef INTERPRETER_OPERATORS_PROC_H
+#define INTERPRETER_OPERATORS_PROC_H
 
 #include "globalValues.h"
 #include "Token.h"
 
-struct dataPack{
+// ------------------------------------------------
+// dynamic programming - most basic data unit
+// ------------------------------------------------
+
+struct dataPack
+    // just contains data union with corresponding data enum - tagged union
+{
+// ------------------------------
+// type creation
+// ------------------------------
+
+    dataPack();
+    explicit dataPack(void* dataPtr, dataType type);
+    explicit dataPack(const char* constChar);
+    explicit dataPack(IntegerType val);
+    explicit dataPack(FloatingPointType val);
+    explicit dataPack(MatrixType val);
+    explicit dataPack(VectorType val);
+
+// ------------------------------
+// public fields
+// ------------------------------
+
+    dataType dType;
+
     union{
         void* dynamicDataPtr;
         const char* constChar;
         FloatingPointType fpVal;
         IntegerType intVal;
     } dUnion;
-    dataType dType;
-    explicit dataPack(void* dataPtr = nullptr, dataType type = dataType::voidType);
-    explicit dataPack(const char* constChar);
-    explicit dataPack(IntegerType val);
-    explicit dataPack(FloatingPointType val);
-    explicit dataPack(MatrixType val);
-    explicit dataPack(VectorType val);
 };
+
+// --------------------------------
+// dataPack helping functions
+// --------------------------------
 
 dataPack getDPack(Token x);
 void printDataPack(dataPack& x);
@@ -72,7 +93,7 @@ struct operDIV{
 };
 
 // ------------------------------------
-// processing opeartors templates
+// processing operators templates
 // ------------------------------------
 
 template<
@@ -96,13 +117,13 @@ inline static constexpr dataPack (*processDIV)(dataPack, dataPack) { &processOpe
 // ------------------------------
 
 struct binPack{
-    binOpType type;
+    binOpType type { binOpType::UNKNOWN };
     dataPack leftArg;
     dataPack rightArg;
 };
 
 struct unaryPack{
-    unaryOpType type;
+    unaryOpType type { unaryOpType::UNKNOWN };
     dataPack Arg;
 };
 
@@ -110,7 +131,7 @@ dataPack processBinaryOperand(binPack x);
 dataPack processUnaryOperand(unaryPack x);
 
 // ---------------------------------------------------
-// processing opeartors templates implementation
+// processing operators templates implementation
 // ---------------------------------------------------
 
 template<
@@ -161,4 +182,4 @@ dataPack processOperator(dataPack lOperand, dataPack rOperand){
     }
 }
 
-#endif //INTERPRETER_OPERATORSPROC_H
+#endif //INTERPRETER_OPERATORS_PROC_H
