@@ -8,139 +8,11 @@
 #include "../include/LexerUnit.h"
 #include "../include/errors.h"
 
-using rProc = void(LexerUnit::*)();
+// ---------------------------------
+// static fields initialisation
+// ---------------------------------
 
-const rProc LexerUnit::reactionMap[ASCII_SIZE] {
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::processNewLine,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::Nothing,
-        &LexerUnit::processSpace,
-        &LexerUnit::processNegation,
-        &LexerUnit::processConstChar,
-        &LexerUnit::processComment,
-        &LexerUnit::processInvalidChar, // $
-        &LexerUnit::processModulo,
-        &LexerUnit::processAND,
-        &LexerUnit::processInvalidChar, // '
-        &LexerUnit::processParenthesisOpened,
-        &LexerUnit::processParenthesisClosed,
-        &LexerUnit::processMult,
-        &LexerUnit::processAdd,
-        &LexerUnit::processComma,
-        &LexerUnit::processSub,
-        &LexerUnit::processDot,
-        &LexerUnit::processDiv,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processNumber,
-        &LexerUnit::processColon,
-        &LexerUnit::processSemiColon, // ;
-        &LexerUnit::processSmaller,
-        &LexerUnit::processEqual,
-        &LexerUnit::processBigger,
-        &LexerUnit::processInvalidChar, // ?
-        &LexerUnit::processInvalidChar, // @
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processIndexOpen,
-        &LexerUnit::processInvalidChar, // "\"
-        &LexerUnit::processIndexClose,
-        &LexerUnit::processPow,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processInvalidChar, // `
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processEmptyChar,
-        &LexerUnit::processInvalidChar, // {
-        &LexerUnit::processOR,
-        &LexerUnit::processInvalidChar, // }
-        &LexerUnit::processInvalidChar, // ~
-        &LexerUnit::Nothing
-};
-
+// TODO: currently not used, should be changed in close future
 const std::unordered_map<const char*, keywordType, std::hash<const char*>, stringCmp> LexerUnit::keyWordMap{
     std::make_pair("if", keywordType::IF),
     std::make_pair("elif", keywordType::ELIF),
@@ -151,13 +23,25 @@ const std::unordered_map<const char*, keywordType, std::hash<const char*>, strin
     std::make_pair("end", keywordType::END),
 };
 
+// ------------------------------
+// state changing methods
+// ------------------------------
+
+std::list<Token> LexerUnit::breakToTokens(){
+    for (curPos = 0; curPos < fSize; ++curPos){
+        reactProc react = reactionMap[file[curPos]];
+        (this->*react)();
+    }
+
+    return tokens;
+}
+
+
 void LexerUnit::expectNewToken() {
     isNewToken = true;
 
+    // TODO: change this awful lines of code ASAP
     if (auto& prevToken = tokens.back(); prevToken.getTokenInfo().tType == tokenType::VAR){
-//        if (auto iter = keyWordMap.find(prevToken.getIdentifier()); iter != keyWordMap.end()){
-//            prevToken.setTokenInfo(Token::tokenInfo(iter->second));
-//        }
 
         auto id = prevToken.getIdentifier();
         if (std::strcmp(id, "if") == 0) prevToken.setTokenInfo(Token::tokenInfo(keywordType::IF));
@@ -170,7 +54,13 @@ void LexerUnit::expectNewToken() {
     }
 }
 
-void LexerUnit::cSep(separatorType type) {
+// --------------------------------------------------------------------------
+// methods used to imply correct logic on specific character occurrence
+// --------------------------------------------------------------------------
+
+// Used to not repeat same logic in all closing separators
+void LexerUnit::cSep(separatorType type)
+{
     tokens.emplace_back(Token::tokenInfo(type), line);
 
     auto lastOpenedSep = separatorStack.top();
@@ -184,25 +74,18 @@ void LexerUnit::cSep(separatorType type) {
     expectNewToken();
 }
 
+// Used to not repeat same logic in all separators
 void LexerUnit::sep(separatorType type) {
     tokens.emplace_back(Token::tokenInfo(type), line);
     file[curPos] = '\0';
     expectNewToken();
 }
 
+// Used to not repeat same logic in all operators
 inline void LexerUnit::op(Token::tokenInfo tInfo) {
     tokens.emplace_back(tInfo, line);
     file[curPos] = '\0';
     expectNewToken();
-}
-
-std::list<Token> LexerUnit::breakToTokens(){
-    for (curPos = 0; curPos < fSize; ++curPos){
-        void(LexerUnit::*react)() = reactionMap[(unsigned char)file[curPos]];
-        (this->*react)();
-    }
-
-    return tokens;
 }
 
 void LexerUnit::processNewLine(){
@@ -224,6 +107,7 @@ void LexerUnit::processComment() {
     expectNewToken();
 }
 
+// TODO: '"' inside const char sequence?
 void LexerUnit::processConstChar() {
     file[curPos++] = '\0';
     Token temp {Token::tokenInfo(dataType::constChar), line };
@@ -289,10 +173,10 @@ void LexerUnit::processModulo() {
     op(Token::tokenInfo(binOpType::MOD));
 }
 
-void LexerUnit::processDot() {
-    // for now:
+void LexerUnit::processDot()
+    // TODO: Not implemented yet, used only in future inside classes
+{
     throw std::runtime_error("[ERROR] Dot character ('.') should only be used during literal values typing\nIn future use of classes");
-//    sep(".");
 }
 
 void LexerUnit::processNumber() {
@@ -312,7 +196,7 @@ void LexerUnit::processNumber() {
         // TODO: sensitive to change of IntegerType
         IntegerType intVal = strtoll(begin, &end, 10);
         if (end != begin)
-            // strtod return end == begin when error happened
+            // strtoll return end == begin when error happened
         {
             // curPos should indicate an already used character because of the main LexerUnit loop
             curPos += (end - begin) - 1;
@@ -347,7 +231,9 @@ void LexerUnit::processColon() {
     sep(separatorType::COLON);
 }
 
-void LexerUnit::processInvalidChar() {
+void LexerUnit::processInvalidChar()
+    // used to prevent usage of reserved characters, maybe not used yet but possibly in the future
+{
     static const std::string msg = "[ERROR] Encountered reserved but unused character, to ensure backward compatibility its use is prohibited!\n";
     const std::string whatChar = std::string("Char: ") + file[curPos] + '\n';
     const std::string position = std::string ("On line: ") + std::to_string(line) + '\n';
@@ -421,4 +307,11 @@ void LexerUnit::processSemiColon() {
         throw std::runtime_error(msg + separatorTypeSymbols[(size_t) separatorStack.top()] + "\", on line: " + std::to_string(line) + '\n');
     }
     sep(separatorType::SEMI_COLON);
+}
+
+void LexerUnit::abandonIfEmpty() noexcept(false) {
+    if (tokens.empty()) [[unlikely]]
+    {
+        throw std::runtime_error("[ERROR] Invalid use of operator or separator Token on first line\n");
+    }
 }

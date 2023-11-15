@@ -7,6 +7,7 @@ cmake-build-reldeb-gcc/
 cmake-build-release-clang/
 cmake-build-release-gcc/
 cmake-build-release/
+Docs/simple_arithmetic_translator.xopp
 *.exe
 DebugLogs/
 Logs/

@@ -12,10 +12,10 @@
 #include "AST.h"
 #include "StdBasedHashTable.h"
 
-// -------------
+// ----------------------------------------------------
 // Insert your hashtable class here:
     using MemoryManager = StdBasedHashTable;
-//--------------
+//-----------------------------------------------------
 
 class InterpretingUnit{
     std::list<Token>& tokenStream;

@@ -1,2 +1,6 @@
 dodaj informowanie o bledach na zasadzie rzucasz wyjatek lapiesz w gornej warstie parsera, kazdy token zawiera informacje o lini na ktorej wystepuje
 i parser wypisuje linijke podkresla ew w ktorym miejscu wystepuje blad
+
+Napisz dokladna specyfikacje jezyka w, potrzebna do porawnej implementacji
+
+UWAGA SPRAWDZ W PARSERZE CZY DZIALAJA ZMIENNA Z NUMERICAMI

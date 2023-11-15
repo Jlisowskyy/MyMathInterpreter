@@ -2,8 +2,8 @@
 // Created by Jlisowskyy on 08/08/2023.
 //
 
-#ifndef INTERPRETER_GLOBALVALUES_H
-#define INTERPRETER_GLOBALVALUES_H
+#ifndef INTERPRETER_GLOBAL_VALUES_H
+#define INTERPRETER_GLOBAL_VALUES_H
 
 #include <cstdlib>
 #include <cstdio>
@@ -19,15 +19,15 @@ constexpr const char* parserLogsDestDefault { R"(Logs/)" };
 
 using FloatingPointType = double;
 using IntegerType = long long int;
-using VectorType = char; // TODO
-using MatrixType = float; // TODO
+using VectorType = char; // TODO: To be replaced with custom made VectorType
+using MatrixType = float; // TODO: To be replaced with custom made MatrixType
 
 constexpr char commentChar { '#' };
 constexpr char EOL { '\n' };
 constexpr size_t ASCII_SIZE { 128 };
 constexpr size_t MAX_FILE_SIZE { 33554432 }; // 32 MiB
 
-constexpr char SPECCHAR_BORDER {'A'};
+constexpr char SPEC_CHAR_BORDER {'A'};
     // value beneath which all chars are treated as special ones and needs to be interpreted as ones
 
 constexpr bool isComment(const char x){
@@ -64,7 +64,6 @@ struct stringCmp{
     }
 };
 
-// TODO: ordered by usage frequency???
 enum class tokenType{
     VAR,
     SEPARATOR,
@@ -131,7 +130,7 @@ enum class dataType {
     voidType,
 };
 
-// TODO: ARRAYS
+// TODO: type arrays
 
 static const char* tTypeNames[] ={
         "VAR",
@@ -199,7 +198,7 @@ static const char* binOpTypeNames[] = {
         "SMALLER_EQUAL_THAN",
         "BIGGER_EQUAL_THAN",
         "ASSIGN",
-        "ERROR_BINOP"
+        "ERROR_BIN_OP"
 };
 
 static const char* binOpTypeSymbols[]={
@@ -217,19 +216,19 @@ static const char* binOpTypeSymbols[]={
         "<=",
         ">=",
         "=",
-        "ERROR_UNOP",
+        "ERROR_BIN_OP",
 };
 
 static const char* unaryOpTypeNames[] = {
         "LOGICAL_NEGATION",
         "MATHEMATICAL_NEGATION",
-        "ERROR_UNOP"
+        "ERROR_UN_OP"
 };
 
 static const char* unaryOpTypeSymbols[] = {
         "!",
         "-",
-        "ERROR_UNOP",
+        "ERROR_UN_OP",
 };
 
-#endif //INTERPRETER_GLOBALVALUES_H
+#endif //INTERPRETER_GLOBAL_VALUES_H
